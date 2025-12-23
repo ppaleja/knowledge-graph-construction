@@ -1,121 +1,138 @@
-import type { IExtractor, GraphData } from "../../types/domain.js";
-import { EXTRACT_PROMPT } from "../../prompts/extract.js";
-import { Settings } from "llamaindex";
-import { GraphDataSchema } from "#types/zodSchemas.js";
+import type { IExtractor, GraphData, Entity, Relationship } from "../../types/domain.js";
+import { LlamaExtract } from "llama-cloud-services";
+import { entitySchema } from "./entitySchema.js";
+import { relationshipSchema } from "./relationshipSchema.js";
 
 export class Extractor implements IExtractor {
-  name = "The Dreamer";
+    name = "The Dreamer";
+    private llamaExtract: LlamaExtract;
 
-  async process(text: string): Promise<GraphData> {
-    console.log(`[${this.name}] Processing text (length: ${text.length})...`);
-
-    const llm = Settings.llm;
-    const formattedPrompt = EXTRACT_PROMPT.format({ text: text });
-
-    try {
-      // Method 1: Try llm.exec with structured output (LlamaIndex recommended API)
-      if (typeof (llm as any).exec === "function") {
-        console.log(`[${this.name}] Using llm.exec with structured output...`);
-        const { object } = await (llm as any).exec({
-          messages: [{ role: "user", content: formattedPrompt }],
-          responseFormat: GraphDataSchema,
-        });
-        console.log(
-          `[${this.name}] Extracted ${object.entities?.length || 0} entities and ${object.relationships?.length || 0} relationships.`,
+    constructor() {
+        this.llamaExtract = new LlamaExtract(
+            process.env.LLAMA_CLOUD_API_KEY!,
+            "https://api.cloud.llamaindex.ai",
         );
-        return object as unknown as GraphData;
-      }
-    } catch (execError) {
-      console.warn(
-        `[${this.name}] llm.exec failed, falling back to regular chat:`,
-        (execError as Error).message,
-      );
     }
 
-    // Method 2: Fallback to plain chat and manual JSON parsing
-    console.log(
-      `[${this.name}] Using fallback llm.chat with manual JSON parsing...`,
-    );
-    const response = await llm.chat({
-      messages: [
-        {
-          role: "user",
-          content: formattedPrompt + "\n\nRespond with valid JSON only.",
-        },
-      ],
-    });
+    async process(text: string): Promise<GraphData> {
+        console.log(`[${this.name}] Processing text (length: ${text.length})...`);
 
-    const rawOutput = response.message.content;
-    console.log(
-      `[${this.name}] Raw LLM output (first 500 chars):`,
-      typeof rawOutput === "string" ? rawOutput.substring(0, 500) : rawOutput,
-    );
-    let jsonData: any;
+        // Phase 1: Extract entities using LlamaExtract
+        console.log(`[${this.name}] Phase 1: Extracting entities...`);
+        const entities = await this.extractEntities(text);
+        console.log(`[${this.name}] Phase 1 complete: ${entities.length} entities extracted`);
 
-    if (typeof rawOutput === "string") {
-      // Clean markdown code blocks if present
-      const jsonMatch =
-        rawOutput.match(/```json\s*([\s\S]*?)\s*```/) ||
-        rawOutput.match(/```\s*([\s\S]*?)\s*```/);
-      const jsonStr =
-        jsonMatch && jsonMatch[1] ? jsonMatch[1].trim() : rawOutput.trim();
-      try {
-        jsonData = JSON.parse(jsonStr);
-      } catch (e) {
-        console.error(
-          `[${this.name}] JSON Parse Error. Raw output:`,
-          rawOutput.substring(0, 500),
-        );
-        return { entities: [], relationships: [] };
-      }
-    } else {
-      jsonData = rawOutput;
+        if (entities.length === 0) {
+            console.warn(`[${this.name}] No entities extracted, skipping relationship extraction`);
+            return { entities: [], relationships: [] };
+        }
+
+        // Phase 2: Extract relationships using LLM
+        console.log(`[${this.name}] Phase 2: Extracting relationships...`);
+        const relationships = await this.extractRelationships(text, entities);
+        console.log(`[${this.name}] Phase 2 complete: ${relationships.length} relationships extracted`);
+
+        console.log(`[${this.name}] Extraction complete: ${entities.length} entities, ${relationships.length} relationships`);
+        return { entities, relationships };
     }
 
-    // Validate and map to ensure GraphData shape
-    // Handle different key names the LLM might use
-    if (jsonData) {
-      // Support both 'entities' (preferred) and 'nodes' (legacy/alt)
-      const extractedEntities = Array.isArray(jsonData.entities)
-        ? jsonData.entities
-        : Array.isArray(jsonData.nodes)
-          ? jsonData.nodes
-          : [];
-      const extractedRelationships = Array.isArray(jsonData.relationships)
-        ? jsonData.relationships
-        : Array.isArray(jsonData.edges)
-          ? jsonData.edges
-          : [];
+    private async extractEntities(text: string): Promise<Entity[]> {
+        try {
+            const fileBuffer = Buffer.from(text);
+            const extractedData = await this.llamaExtract.extract(
+                entitySchema,
+                {},
+                undefined,
+                fileBuffer,
+            );
 
-      const validEntities = extractedEntities
-        .map((n: any) => ({
-          id: n.id || n.name,
-          name: n.name || n.id,
-          type: n.type || "Concept",
-          description: n.description || "",
-          metadata: n.metadata,
-        }))
-        .filter((n: any) => n.name && typeof n.name === "string");
+            const resultItem = Array.isArray(extractedData)
+                ? extractedData[0]
+                : extractedData;
 
-      const validRelationships = extractedRelationships
-        .map((e: any) => ({
-          sourceId: e.sourceId || e.source,
-          targetId: e.targetId || e.target,
-          type: e.type || e.relation || "related_to",
-          description: e.description,
-          metadata: e.metadata,
-        }))
-        .filter((e: any) => e.sourceId && e.targetId && e.type);
+            if (resultItem && "data" in resultItem) {
+                const data = resultItem.data as any;
+                return data.entities || [];
+            }
 
-      console.log(
-        `[${this.name}] Extracted ${validEntities.length} entities and ${validRelationships.length} relationships.`,
-      );
-      return {
-        entities: validEntities,
-        relationships: validRelationships,
-      } as GraphData;
+            return [];
+        } catch (error) {
+            console.error(
+                `[${this.name}] Entity extraction failed:`,
+                (error as Error).message,
+            );
+            return [];
+        }
     }
 
-    return { entities: [], relationships: [] };
-  }
+    private async extractRelationships(text: string, entities: Entity[]): Promise<Relationship[]> {
+        try {
+            // Format entity list as instruction context
+            const entityList = entities.map(e =>
+                `- ${e.id}: ${e.name} (${e.type})`
+            ).join('\n');
+
+            const instructions = `You are extracting relationships between entities from an academic paper.
+
+ENTITY LIST (use these exact IDs for sourceId and targetId):
+${entityList}
+
+RELATIONSHIP TYPES:
+- improves_on: Method A improves upon Method B
+- uses: Method A uses Method/Concept B
+- evaluated_on: Method A evaluated on Dataset B
+- achieves: Method A achieves Metric B
+- proposes: Paper/Author proposes Method A
+- addresses: Method A addresses Task B
+- related_to: Concept A related to Concept B
+- based_on: Method A based on Concept/Method B
+
+CRITICAL: Use ONLY the exact entity IDs from the list above for sourceId and targetId.`;
+
+            // Use LlamaExtract with relationshipSchema
+            const fileBuffer = Buffer.from(text);
+            const extractedData = await this.llamaExtract.extract(
+                relationshipSchema,
+                { system_prompt: instructions },
+                undefined,
+                fileBuffer,
+            );
+
+            const resultItem = Array.isArray(extractedData)
+                ? extractedData[0]
+                : extractedData;
+
+            if (resultItem && "data" in resultItem) {
+                const data = resultItem.data as any;
+                const relationships = data.relationships || [];
+
+                console.log(`[${this.name}] LlamaExtract returned ${relationships.length} relationships`);
+
+                // Validate entity IDs and filter invalid relationships
+                const entityIds = new Set(entities.map(e => e.id));
+                const validRelationships = relationships.filter((rel: Relationship) =>
+                    entityIds.has(rel.sourceId) &&
+                    entityIds.has(rel.targetId) &&
+                    rel.sourceId !== rel.targetId
+                );
+
+                const filteredCount = relationships.length - validRelationships.length;
+                if (filteredCount > 0) {
+                    console.log(
+                        `[${this.name}] Filtered ${filteredCount} relationships with invalid entity IDs`
+                    );
+                }
+
+                return validRelationships;
+            }
+
+            return [];
+        } catch (error) {
+            console.error(
+                `[${this.name}] Relationship extraction failed:`,
+                (error as Error).message,
+            );
+            return [];
+        }
+    }
 }
