@@ -1,0 +1,14 @@
+src/
+├── ingestion/
+│   └── pdfLoader.js         # Wrapper for LlamaParse
+├── pipeline/
+│   ├── extract.js           # "The Dreamer": Raw Extraction Transformation
+│   ├── define.js            # "The Architect": Ontology Synthesis Logic
+│   ├── canonicalize.js      # "The Librarian": Resolution Transformation
+│   └── orchestrator.js      # "The Manager": Main EDC Pipeline Class
+├── storage/
+│   ├── graphStore.js        # Wrapper for PostgresGraphStore
+│   └── vectorStore.js       # Ephemeral store for Schema Synthesis
+├── types/
+│   └── schema.js            # JSDoc definitions for Schema objects
+└── index.js                 # Entry point

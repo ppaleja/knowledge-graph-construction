@@ -1,0 +1,345 @@
+{
+  "entities": [
+    {
+      "id": "Agentic System",
+      "name": "Agentic System",
+      "type": "Method",
+      "description": ""
+    },
+    {
+      "id": "Postgres",
+      "name": "Postgres",
+      "type": "Method",
+      "description": ""
+    },
+    {
+      "id": "Supabase",
+      "name": "Supabase",
+      "type": "Method",
+      "description": ""
+    },
+    {
+      "id": "Facebook's TAO",
+      "name": "Facebook's TAO",
+      "type": "Method",
+      "description": ""
+    },
+    {
+      "id": "3D Gaussian Splatting",
+      "name": "3D Gaussian Splatting",
+      "type": "Method",
+      "description": ""
+    },
+    {
+      "id": "Knowledge Graph Construction",
+      "name": "Knowledge Graph Construction",
+      "type": "Task",
+      "description": ""
+    },
+    {
+      "id": "Reading Research Papers",
+      "name": "Reading Research Papers",
+      "type": "Task",
+      "description": ""
+    },
+    {
+      "id": "Extracting Key Concepts and Entities",
+      "name": "Extracting Key Concepts and Entities",
+      "type": "Task",
+      "description": ""
+    },
+    {
+      "id": "Connecting Concepts Across Papers",
+      "name": "Connecting Concepts Across Papers",
+      "type": "Task",
+      "description": ""
+    },
+    {
+      "id": "Semantic Search",
+      "name": "Semantic Search",
+      "type": "Task",
+      "description": ""
+    },
+    {
+      "id": "Literature Mapping",
+      "name": "Literature Mapping",
+      "type": "Task",
+      "description": ""
+    },
+    {
+      "id": "Novelty Discovery",
+      "name": "Novelty Discovery",
+      "type": "Task",
+      "description": ""
+    },
+    {
+      "id": "3D Reconstruction",
+      "name": "3D Reconstruction",
+      "type": "Task",
+      "description": ""
+    },
+    {
+      "id": "Real-Time Radiance Field Rendering",
+      "name": "Real-Time Radiance Field Rendering",
+      "type": "Task",
+      "description": ""
+    },
+    {
+      "id": "Semantic Queries",
+      "name": "Semantic Queries",
+      "type": "Task",
+      "description": ""
+    },
+    {
+      "id": "Trend Analysis",
+      "name": "Trend Analysis",
+      "type": "Task",
+      "description": ""
+    },
+    {
+      "id": "Take Home Assignment",
+      "name": "Take Home Assignment",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Knowledge Graph",
+      "name": "Knowledge Graph",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Semantic Relationships",
+      "name": "Semantic Relationships",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "System Design Thinking",
+      "name": "System Design Thinking",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Agentic Reasoning",
+      "name": "Agentic Reasoning",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Solid Engineering",
+      "name": "Solid Engineering",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Scalability",
+      "name": "Scalability",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Fault Tolerance",
+      "name": "Fault Tolerance",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Consistency",
+      "name": "Consistency",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Performance",
+      "name": "Performance",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Gaussian Splatting",
+      "name": "Gaussian Splatting",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Computer Graphics",
+      "name": "Computer Graphics",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Radiance Field Rendering",
+      "name": "Radiance Field Rendering",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "SQL Schema",
+      "name": "SQL Schema",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "System Architecture",
+      "name": "System Architecture",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Data Flow Diagrams",
+      "name": "Data Flow Diagrams",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Agent Logic",
+      "name": "Agent Logic",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Graph Database",
+      "name": "Graph Database",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Paper (node type)",
+      "name": "Paper (node type)",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Concept (node type)",
+      "name": "Concept (node type)",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Author (node type)",
+      "name": "Author (node type)",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Method (node type)",
+      "name": "Method (node type)",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Dataset (node type)",
+      "name": "Dataset (node type)",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Metric (node type)",
+      "name": "Metric (node type)",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Introduces (edge type)",
+      "name": "Introduces (edge type)",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Improves_on (edge type)",
+      "name": "Improves_on (edge type)",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Evaluates (edge type)",
+      "name": "Evaluates (edge type)",
+      "type": "Concept",
+      "description": ""
+    },
+    {
+      "id": "Extends (edge type)",
+      "name": "Extends (edge type)",
+      "type": "Concept",
+      "description": ""
+    }
+  ],
+  "relationships": [
+    {
+      "sourceId": "Take Home Assignment",
+      "targetId": "Agentic System",
+      "type": "proposes"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Postgres",
+      "type": "uses"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Supabase",
+      "type": "uses"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Agentic Reasoning",
+      "type": "uses"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "System Design Thinking",
+      "type": "uses"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Knowledge Graph Construction",
+      "type": "achieves"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Reading Research Papers",
+      "type": "achieves"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Extracting Key Concepts and Entities",
+      "type": "achieves"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Connecting Concepts Across Papers",
+      "type": "achieves"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Semantic Search",
+      "type": "achieves"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Literature Mapping",
+      "type": "achieves"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Novelty Discovery",
+      "type": "achieves"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Semantic Queries",
+      "type": "achieves"
+    },
+    {
+      "sourceId": "Agentic System",
+      "targetId": "Trend Analysis",
+      "type": "achieves"
+    },
+    {
+      "sourceId": "3D Gaussian Splatting",
+      "targetId": "Real-Time Radiance Field Rendering",
+      "type": "achieves"
+    }
+  ]
+}
