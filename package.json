@@ -8,6 +8,9 @@
     "build": "tsc",
     "start": "node dist/index.js"
   },
+  "imports": {
+    "#*": "./src/*"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
