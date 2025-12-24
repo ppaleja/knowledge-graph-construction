@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, jsonb, timestamp, integer, unique } from "drizzle-orm/pg-core";
 
 export const documents = pgTable("documents", {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -14,6 +14,7 @@ export const entities = pgTable("entities", {
     type: text("type").notNull(),
     description: text("description"),
     metadata: jsonb("metadata"),
+    version: integer("version").notNull().default(1), // Optimistic concurrency control
 });
 
 export const relationships = pgTable("relationships", {
@@ -23,4 +24,7 @@ export const relationships = pgTable("relationships", {
     type: text("type").notNull(),
     description: text("description"),
     metadata: jsonb("metadata"),
-});
+}, (table) => ({
+    // Unique constraint to prevent duplicate relationships
+    uniqueRelationship: unique().on(table.sourceId, table.targetId, table.type),
+}));
