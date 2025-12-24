@@ -59,7 +59,8 @@ export function createIntegrationWorkflow() {
                 }
             }
 
-            await store.close();
+            // Do not close connection here as it's shared
+            // await store.close();
 
             console.log(
                 `[Integration] Retrieved candidates for ${candidates.size} entities`,
@@ -233,7 +234,7 @@ export function createIntegrationWorkflow() {
             const store = new DrizzleGraphStore();
             await store.init();
             await store.saveGraph(resolvedGraph);
-            await store.close();
+            // await store.close();
 
             const merged = mergeLog.filter((d) => d.action === "MERGE").length;
             const created = mergeLog.filter((d) => d.action === "CREATE").length;

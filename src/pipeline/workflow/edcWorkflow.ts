@@ -173,7 +173,8 @@ export function createEDCWorkflow() {
       const store = new DrizzleGraphStore();
       await store.init();
       await store.saveGraph(graph);
-      await store.close();
+      // Do not close connection here as it's shared
+      // await store.close();
 
       console.log(`[Save Handler] Successfully saved to database`);
 

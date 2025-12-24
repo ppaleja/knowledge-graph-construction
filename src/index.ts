@@ -113,6 +113,10 @@ async function main() {
       break;
     }
   }
+
+  // Close command reference explicitly
+  const { client } = await import("./storage/index.js");
+  await client.end();
 }
 
 main().catch(console.error);
