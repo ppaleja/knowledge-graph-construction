@@ -190,7 +190,7 @@ export async function searchPapers(
 
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error(`❌ OpenAlex Search Error: ${error.message}`, error.response?.data);
+            console.error(`❌ OpenAlex Search Error: ${(error as any).message}`, (error as any).response?.data);
         } else {
             console.error(`❌ Failed to search papers:`, error);
         }
@@ -244,7 +244,7 @@ export async function getCitations(
 
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error(`❌ OpenAlex Citations Error: ${error.message}`, error.response?.data);
+            console.error(`❌ OpenAlex Citations Error: ${(error as any).message}`, (error as any).response?.data);
         } else {
             console.error(`❌ Failed to get citations:`, error);
         }
