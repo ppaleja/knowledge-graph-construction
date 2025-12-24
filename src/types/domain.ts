@@ -1,3 +1,38 @@
+export interface PreparsedPaperContext {
+  title: string;
+  authors: Array<{ name: string; affiliation?: string; email?: string }>;
+  abstract: string;
+  keywords?: string[];
+  mainFindings: string[];
+  methodology?: {
+    approach?: string;
+    participants?: string;
+    methods?: string[];
+  };
+  results?: Array<{
+    finding?: string;
+    significance?: string;
+    supportingData?: string;
+  }>;
+  discussion?: {
+    implications?: string[];
+    limitations?: string[];
+    futureWork?: string[];
+  };
+  references?: Array<{
+    title: string;
+    authors: string;
+    year?: string;
+    relevance?: string;
+  }>;
+  publication?: {
+    journal?: string;
+    year?: string;
+    doi?: string;
+    url?: string;
+  };
+}
+
 export interface Entity {
   id: string;
   name: string;
@@ -25,7 +60,10 @@ export interface IPipelineStep<TInput, TOutput> {
   process(input: TInput): Promise<TOutput>;
 }
 
-export interface IExtractor extends IPipelineStep<string, GraphData> { }
+export interface IExtractor {
+  name: string;
+  process(text: string, context?: PreparsedPaperContext): Promise<GraphData>;
+}
 export interface IDefiner extends IPipelineStep<GraphData, GraphData> {
   consolidateSchema(graph: GraphData): Promise<void>;
 }

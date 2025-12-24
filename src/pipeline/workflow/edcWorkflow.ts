@@ -1,6 +1,7 @@
 import { createWorkflow } from "@llamaindex/workflow-core";
 import {
   loadEvent,
+  preParsedEvent,
   extractEvent,
   defineEvent,
   canonicalizeEvent,
@@ -9,6 +10,7 @@ import {
   errorEvent,
 } from "./events.js";
 import { LlamaParseLoader } from "../../ingestion/loader.js";
+import { PreParser } from "../extract/preParser.js";
 import { Extractor } from "../extract/index.js";
 import { Definer } from "../define/index.js";
 import { Canonicalizer } from "../canonicalize/index.js";
@@ -42,7 +44,7 @@ export function createEDCWorkflow() {
       const text = await loader.load(paperPath);
       console.log(`[Load Handler] Loaded ${text.length} characters`);
 
-      sendEvent(extractEvent.with({ text, paperPath }));
+      sendEvent(preParsedEvent.with({ text, paperPath, context: {} as any }));
     } catch (error) {
       console.error(`[Load Handler] Error:`, error);
       sendEvent(
@@ -55,15 +57,46 @@ export function createEDCWorkflow() {
     }
   });
 
-  workflow.handle([extractEvent], async (context, event) => {
+  workflow.handle([preParsedEvent], async (context, event) => {
     const { sendEvent } = context;
     const { text, paperPath } = event.data;
 
-    console.log(`[Extract Handler] Processing text...`);
+    console.log(`[PreParse Handler] Extracting structured paper metadata...`);
+
+    try {
+      const preParser = new PreParser();
+      const paperContext = await preParser.process(text);
+
+      const debugDir = await ensureDebugDir();
+      await fs.writeFile(
+        path.join(debugDir, "00_preparsed.json"),
+        JSON.stringify(paperContext, null, 2),
+      );
+
+      console.log(`[PreParse Handler] Preparsed paper: "${paperContext.title}"`);
+
+      sendEvent(extractEvent.with({ text, paperPath, context: paperContext }));
+    } catch (error) {
+      console.error(`[PreParse Handler] Error:`, error);
+      sendEvent(
+        errorEvent.with({
+          stage: "preparse",
+          error: (error as Error).message,
+          paperPath,
+        }),
+      );
+    }
+  });
+
+  workflow.handle([extractEvent], async (context, event) => {
+    const { sendEvent } = context;
+    const { text, paperPath, context: paperContext } = event.data;
+
+    console.log(`[Extract Handler] Processing text with preparsed context...`);
 
     try {
       const extractor = new Extractor();
-      const rawGraph: GraphData = await extractor.process(text);
+      const rawGraph: GraphData = await extractor.process(text, paperContext);
 
       const debugDir = await ensureDebugDir();
       await fs.writeFile(

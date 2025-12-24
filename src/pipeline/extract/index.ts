@@ -1,4 +1,4 @@
-import type { IExtractor, GraphData, Entity, Relationship } from "../../types/domain.js";
+import type { IExtractor, GraphData, Entity, Relationship, PreparsedPaperContext } from "../../types/domain.js";
 import { LlamaExtract } from "llama-cloud-services";
 import { entitySchema } from "./entitySchema.js";
 import { relationshipSchema } from "./relationshipSchema.js";
@@ -14,12 +14,16 @@ export class Extractor implements IExtractor {
         );
     }
 
-    async process(text: string): Promise<GraphData> {
+    async process(text: string, context?: PreparsedPaperContext): Promise<GraphData> {
         console.log(`[${this.name}] Processing text (length: ${text.length})...`);
+
+        if (context) {
+            console.log(`[${this.name}] Using preparsed context for paper: "${context.title}"`);
+        }
 
         // Phase 1: Extract entities using LlamaExtract
         console.log(`[${this.name}] Phase 1: Extracting entities...`);
-        const entities = await this.extractEntities(text);
+        const entities = await this.extractEntities(text, context);
         console.log(`[${this.name}] Phase 1 complete: ${entities.length} entities extracted`);
 
         if (entities.length === 0) {
@@ -29,18 +33,42 @@ export class Extractor implements IExtractor {
 
         // Phase 2: Extract relationships using LLM
         console.log(`[${this.name}] Phase 2: Extracting relationships...`);
-        const relationships = await this.extractRelationships(text, entities);
+        const relationships = await this.extractRelationships(text, entities, context);
         console.log(`[${this.name}] Phase 2 complete: ${relationships.length} relationships extracted`);
 
         console.log(`[${this.name}] Extraction complete: ${entities.length} entities, ${relationships.length} relationships`);
         return { entities, relationships };
     }
 
-    private async extractEntities(text: string): Promise<Entity[]> {
+    private async extractEntities(text: string, context?: PreparsedPaperContext): Promise<Entity[]> {
+        // Build enhanced instructions with preparsed context
+        let instructions = "Extract entities from this academic paper.";
+
+        if (context) {
+            instructions += `\n\nPAPER CONTEXT:`;
+            instructions += `\nTitle: ${context.title}`;
+            instructions += `\nAbstract: ${context.abstract}`;
+
+            if (context.keywords && context.keywords.length > 0) {
+                instructions += `\nKeywords: ${context.keywords.join(", ")}`;
+            }
+
+            if (context.mainFindings && context.mainFindings.length > 0) {
+                instructions += `\n\nMain Findings:`;
+                context.mainFindings.forEach((finding: string, i: number) => {
+                    instructions += `\n${i + 1}. ${finding}`;
+                });
+            }
+
+            if (context.methodology?.methods && context.methodology.methods.length > 0) {
+                instructions += `\n\nMethods Used: ${context.methodology.methods.join(", ")}`;
+            }
+        }
+
         const fileBuffer = Buffer.from(text);
         const extractedData = await this.llamaExtract.extract(
             entitySchema,
-            {},
+            context ? { system_prompt: instructions } : {},
             undefined,
             fileBuffer,
         );
@@ -57,7 +85,7 @@ export class Extractor implements IExtractor {
         return [];
     }
 
-    private async extractRelationships(text: string, entities: Entity[]): Promise<Relationship[]> {
+    private async extractRelationships(text: string, entities: Entity[], context?: PreparsedPaperContext): Promise<Relationship[]> {
         // Format entity list as instruction context
         const entityList = entities.map(e =>
             `- ${e.id}: ${e.name} (${e.type})`

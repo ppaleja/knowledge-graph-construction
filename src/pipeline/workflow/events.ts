@@ -1,13 +1,21 @@
 import { workflowEvent } from "@llamaindex/workflow-core";
-import type { GraphData } from "../../types/domain.js";
+import type { GraphData, PreparsedPaperContext } from "../../types/domain.js";
 
 /** Event fired to start the pipeline with a paper path */
 export const loadEvent = workflowEvent<{ paperPath: string }>();
 
-/** Event fired when paper text is loaded and ready for extraction */
+/** Event fired when paper is loaded and ready for preparsing */
+export const preParsedEvent = workflowEvent<{
+  text: string;
+  paperPath: string;
+  context: PreparsedPaperContext;
+}>();
+
+/** Event fired when paper text is loaded and preparsed, ready for entity extraction */
 export const extractEvent = workflowEvent<{
   text: string;
   paperPath: string;
+  context: PreparsedPaperContext;
 }>();
 
 /** Event fired when raw entities/relationships are extracted */
