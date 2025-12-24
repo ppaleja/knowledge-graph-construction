@@ -1,6 +1,7 @@
-import type { PreparsedPaperContext } from "../../types/domain.js";
+import type { PreparsedPaperContext } from "#types/preparsedContext.js";
 import { LlamaExtract } from "llama-cloud-services";
 import { paperSchema } from "./paperSchema.js";
+import { config } from "#config/index.js";
 
 export class PreParser {
     name = "[PreParser]";
@@ -8,8 +9,8 @@ export class PreParser {
 
     constructor() {
         this.llamaExtract = new LlamaExtract(
-            process.env.LLAMA_CLOUD_API_KEY!,
-            "https://api.cloud.llamaindex.ai",
+            config.llamaCloud.apiKey,
+            config.llamaCloud.baseUrl,
         );
     }
 

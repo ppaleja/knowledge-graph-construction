@@ -2,12 +2,13 @@ import "dotenv/config";
 import fs from "fs/promises";
 import path from "path";
 import axios from "axios";
+import { config } from "#config/index.js";
 
-const OPEN_ALEX_API = "https://api.openalex.org";
-const DOWNLOAD_DIR = path.resolve("data/papers/corpus");
+const OPEN_ALEX_API = config.openAlex.apiUrl;
+const DOWNLOAD_DIR = path.resolve(config.paths.downloadDir);
 
 // Get email from env for OpenAlex "Polite Pool" (faster, higher limits)
-const OPEN_ALEX_EMAIL = process.env.OPEN_ALEX_EMAIL;
+const OPEN_ALEX_EMAIL = config.openAlex.email;
 
 export interface PaperMetadata {
     paperId: string;

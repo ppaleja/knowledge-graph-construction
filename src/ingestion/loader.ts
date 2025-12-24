@@ -2,6 +2,7 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import { PDFParse } from "pdf-parse";
 import { withRetry } from "../utils/resilience.js"; // Note: .js extension for ESM
+import { config } from "#config/index.js";
 
 export interface IPaperLoader {
     load(filePath: string): Promise<string>;
@@ -24,7 +25,7 @@ export class LlamaParseLoader implements IPaperLoader {
     private localFallback: LocalPdfLoader;
 
     constructor() {
-        this.apiKey = process.env.LLAMA_CLOUD_API_KEY || "";
+        this.apiKey = config.llamaCloud.apiKey;
         this.localFallback = new LocalPdfLoader();
 
         if (!this.apiKey) {

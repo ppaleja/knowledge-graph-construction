@@ -1,7 +1,10 @@
-import type { IExtractor, GraphData, Entity, Relationship, PreparsedPaperContext } from "../../types/domain.js";
+import type { GraphData, Entity, Relationship } from "#types/domain.js";
+import type { IExtractor } from "#types/interfaces/pipeline.js";
+import type { PreparsedPaperContext } from "#types/preparsedContext.js";
 import { LlamaExtract } from "llama-cloud-services";
 import { entitySchema } from "./entitySchema.js";
 import { relationshipSchema } from "./relationshipSchema.js";
+import { config } from "#config/index.js";
 
 export class Extractor implements IExtractor {
     name = "[Extractor]";
@@ -9,8 +12,8 @@ export class Extractor implements IExtractor {
 
     constructor() {
         this.llamaExtract = new LlamaExtract(
-            process.env.LLAMA_CLOUD_API_KEY!,
-            "https://api.cloud.llamaindex.ai",
+            config.llamaCloud.apiKey,
+            config.llamaCloud.baseUrl,
         );
     }
 
