@@ -250,6 +250,7 @@ export function createIntegrationWorkflow() {
                     entitiesProcessed: mergeLog.length,
                     entitiesMerged: merged,
                     entitiesCreated: created,
+                    resolvedGraph, // Include the resolved graph for tool usage
                 }),
             );
         } catch (error) {

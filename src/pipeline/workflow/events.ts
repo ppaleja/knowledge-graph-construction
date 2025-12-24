@@ -34,6 +34,7 @@ export const completeEvent = workflowEvent<{
   paperPath: string;
   entitiesCount: number;
   relationshipsCount: number;
+  finalGraph?: GraphData; // Optional: contains the processed graph for tool usage
 }>();
 
 /** Event fired on any error in the pipeline */

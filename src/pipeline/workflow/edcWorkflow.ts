@@ -184,6 +184,8 @@ export function createEDCWorkflow() {
           paperPath,
           entitiesCount: graph.entities.length,
           relationshipsCount: graph.relationships.length,
+          // Store the final graph for retrieval
+          finalGraph: graph,
         }),
       );
     } catch (error) {
@@ -211,6 +213,7 @@ export function createEDCWorkflow() {
         paperPath,
         entitiesCount: 0,
         relationshipsCount: 0,
+        finalGraph: { entities: [], relationships: [] },
       }),
     );
   });
