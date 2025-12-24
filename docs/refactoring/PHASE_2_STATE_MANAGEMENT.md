@@ -52,7 +52,7 @@ Handler      Handler        Handler          Handler          Handler    (Done)
 **File**: `src/pipeline/workflow/state.ts`
 
 ```typescript
-import type { GraphData } from "../../types/domain.js";
+import type { GraphData } #types/domain.js";
 
 /**
  * EDC Workflow State
@@ -165,11 +165,11 @@ import {
   errorEvent,
 } from "./events.js";
 import { EDCState, createInitialState } from "./state.js";
-import { LlamaParseLoader } from "../../ingestion/loader.js";
+import { LlamaParseLoader } #ingestion/loader.js";
 import { Extractor } from "../extract/index.js";
 import { Definer } from "../define/index.js";
 import { Canonicalizer } from "../canonicalize/index.js";
-import { DrizzleGraphStore } from "../../storage/drizzleStore.js";
+import { DrizzleGraphStore } #storage/drizzleStore.js";
 import * as fs from "fs/promises";
 import * as path from "path";
 

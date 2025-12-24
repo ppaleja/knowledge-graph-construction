@@ -13,7 +13,7 @@ graph TB
     User[User Request] -->|--agent flag| Controller
     
     subgraph "Orchestrator Layer"
-        Controller[Central Controller<br/>(Gemini 2.0 Flash)]
+        Controller["Central Controller<br>(Gemini 2.0 Flash)"]
     end
     
     subgraph "Tool Layer"
@@ -52,6 +52,10 @@ graph TB
     Query --> DB
     Stats --> DB
 ```
+
+## Data Layer
+*   **Database**: Postgres (Supabase)
+*   **Vector Search**: `pgvector` enabled for semantic similarity search.
 
 ## The Central Controller
 

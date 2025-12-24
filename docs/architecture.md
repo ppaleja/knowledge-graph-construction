@@ -1,68 +1,232 @@
 # Architecture — High-level overview
 
-This file is the single high-level architecture document for the project. It explains where major logic lives and points you to dedicated diagram files that document the system dataflows. Diagrams are intentionally placed in their own Markdown files (under `docs/diagrams/`) so each diagram has its explanatory context — no orphaned diagrams.
+This file is the single high-level architecture document for the project. It explains where major logic lives and how the system is organized.
 
-If you want a single glance summary: ingestion -> extraction -> schema synthesis -> canonicalization -> persistent graph store. The `orchestrator` coordinates those stages and provides retries, batching and observability.
+## Overview
 
-## Where to look in the codebase
+The system builds knowledge graphs from academic papers through two execution modes:
+1. **Agentic Mode** (recommended): Autonomous agent discovers and processes papers
+2. **Legacy Mode**: Direct pipeline execution on single papers
 
-- Entry point
-  - `src/index.js` — bootstrapping and CLI / job runner.
-- Ingestion
-  - `src/ingestion/pdfLoader.js` — PDF ingestion and parser wrapper (LlamaParse or similar).
-- Pipeline stages
-  - `src/pipeline/orchestrator.js` — pipeline coordinator (retries, concurrency, metrics).
-  - `src/pipeline/extract.js` — raw extraction stage ("The Dreamer").
-  - `src/pipeline/define.js` — schema/ontology synthesis ("The Architect").
-  - `src/pipeline/canonicalize.js` — deduplication and normalization ("The Librarian").
-- Storage
-  - `src/storage/vectorStore.js` — ephemeral vector store used during synthesis.
-  - `src/storage/graphStore.js` — persistent graph store (Postgres / PostgresGraphStore wrapper).
-- Types & docs
-  - `src/types/schema.js` — JSDoc/type hints for schema objects passed between stages.
+**High-level flow**: Paper Discovery → PDF Loading → Extraction → Definition → Canonicalization → Integration → Persistent Graph Store
 
-This file intentionally avoids embedding the diagrams themselves. Each diagram has its own Markdown file in `docs/diagrams/` that contains the Mermaid diagram and a short description of what the diagram documents and why it matters.
+---
 
-## Diagrams (each one lives in its own file)
+## Execution Modes
 
-- High-level system flow
-  - File: `docs/diagrams/high-level.md`
-  - Purpose: single-page overview showing ingestion → pipeline → storage. Use this for onboarding and architecture review.
-- Pipeline internals (sequence)
-  - File: `docs/diagrams/pipeline-internals.md`
-  - Purpose: sequence diagram showing the handoff between `extract.js`, `define.js`, `canonicalize.js`, the ephemeral `vectorStore`, and `graphStore`.
-- Ingestion → parsing → extraction detail
-  - File: `docs/diagrams/ingestion-detail.md`
-  - Purpose: shows how `pdfLoader` and the parser produce chunks and how `extract.js` consumes them.
-- Storage lifecycle & interactions
-  - File: `docs/diagrams/storage-lifecycle.md`
-  - Purpose: explains what is stored ephemerally (vectors) vs persistently (graph) and the lifecycle for each artifact.
-- Runtime flow for a single document (including retries and observability)
-  - File: `docs/diagrams/runtime-flow.md`
-  - Purpose: flowchart that includes error/retry paths, observability touchpoints, and lifecycle for a single run.
+### Agentic Mode (Recommended)
+```bash
+node dist/index.js --agent "Build a KG on Gaussian Splatting with 10 papers"
+```
 
-Each diagram file includes:
-- The Mermaid diagram.
-- A short textual explanation describing the actors, the data that flows, and any important invariants (e.g., "do not persist ephemeral vectors to the canonical graph", "canonical IDs are authoritative").
-- Suggested follow-ups (where to add instrumentation, how to extend the flow, etc.).
+- Uses Central Controller (ReACT agent)
+- Autonomously discovers, downloads, and processes papers
+- Leverages 6 orchestrator tools
+- Provides natural language interface
+- See [agentic-architecture.md](./agentic-architecture.md) for details
 
-## Design principles (brief)
+### Legacy Mode
+```bash
+node dist/index.js path/to/paper.pdf --integrate
+```
 
-- Single responsibility: ingestion, transformation, and persistence are separated into modules.
-- Idempotency: canonicalization stage enforces stable IDs and upsert semantics before persistent writes.
-- Ephemeral synthesis: vector operations are transient and scoped to a run/session to avoid polluting the canonical graph.
-- Centralized orchestration: `orchestrator` manages retries, concurrency limits, and emits structured logs/metrics.
+- Runs EDC workflow directly on single PDF
+- Optional `--integrate` flag merges with existing graph
+- Useful for debugging individual papers
 
-## How to use the diagrams
+---
 
-1. Open the files under `docs/diagrams/` in any editor that supports Mermaid rendering (or paste the Mermaid blocks into an online Mermaid live editor).
-2. Each diagram file includes a short narrative; read that narrative before interpreting the diagram.
-3. Use the high-level diagram (`high-level.md`) for onboarding, and the detailed diagrams for implementation or design work.
+## Technology Stack
 
-## Next steps I can take for you
+### Core
+- **Language**: TypeScript (Node.js ESM)
+- **LLM Framework**: LlamaIndex (workflows, agents, tools)
+- **LLM Provider**: Google Gemini 2.0 Flash
 
-- Produce the individual diagram files under `docs/diagrams/` (each containing Mermaid and explanatory text).
-- Render each diagram to PNG/SVG and add them to `docs/diagrams/assets/`.
-- Expand any diagram to include concrete function names, DB tables, or sample payload shapes.
+### Database
+- **Database**: Supabase (Postgres)
+- **ORM**: Drizzle ORM
+- **Vector Search**: pgvector extension
+- **Migrations**: drizzle-kit
 
-Tell me which next step you prefer and I will implement it (e.g., "create the diagram files" or "generate PNGs and add them to docs").
+### External APIs
+- **Paper Discovery**: OpenAlex API (with polite pool)
+- **PDF Parsing**: LlamaParse (with pdf-parse fallback)
+- **Metadata Extraction**: LlamaExtract
+
+---
+
+## Directory Structure
+
+```
+src/
+├── config/
+│   └── index.ts              # Centralized environment variables
+├── index.ts                  # Entry point (supports --agent and legacy modes)
+├── orchestrator/             # Agentic layer (NEW)
+│   ├── controller.ts         # Central ReACT agent
+│   └── tools/                # 6 orchestrator tools
+│       ├── paperDiscovery.ts # searchPapers, getCitations, downloadPaper
+│       ├── processPaper.ts   # processPaper (wraps EDC + Integration)
+│       └── queryKG.ts        # queryKnowledgeGraph, summarizeKnowledgeGraph
+├── ingestion/
+│   ├── loader.ts             # PDF loading (LlamaParse + fallback)
+│   └── collector.ts          # OpenAlex API integration
+├── pipeline/
+│   ├── workflow/
+│   │   ├── edcWorkflow.ts    # EDC event-driven workflow
+│   │   └── integrationWorkflow.ts  # Integration workflow
+│   ├── extract/
+│   │   ├── index.ts          # Entity/relationship extraction
+│   │   └── preParser.ts      # LlamaExtract metadata extraction
+│   ├── define/
+│   │   └── index.ts          # Type refinement
+│   └── canonicalize/
+│       └── index.ts          # Intra-document deduplication
+├── storage/
+│   ├── drizzleStore.ts       # Drizzle ORM + Supabase client
+│   ├── schema.ts             # Postgres schema (entities, relationships)
+│   └── index.ts              # Database connection
+├── types/
+│   ├── domain.ts             # Core domain types (Entity, Relationship, GraphData)
+│   └── interfaces/           # Interface definitions
+└── utils/
+    ├── embeddings.ts         # Vector embedding generation
+    ├── llm.ts                # LLM initialization
+    └── resilience.ts         # Retry logic
+```
+
+---
+
+## Where to Look in the Codebase
+
+### Entry Points
+- **Main**: [src/index.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/index.ts) - Supports `--agent` (agentic) and legacy modes
+- **Agentic Controller**: [src/orchestrator/controller.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/orchestrator/controller.ts) - ReACT agent with system prompt
+
+### Ingestion
+- **PDF Loading**: [src/ingestion/loader.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/ingestion/loader.ts) - LlamaParse with fallback to pdf-parse
+- **Paper Discovery**: [src/ingestion/collector.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/ingestion/collector.ts) - OpenAlex API integration
+
+### Orchestrator (Agentic Layer)
+- **Controller**: [src/orchestrator/controller.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/orchestrator/controller.ts) - Central ReACT agent
+- **Tools**: [src/orchestrator/tools/](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/orchestrator/tools/)
+  - `paperDiscovery.ts` - searchPapers, getCitations, downloadPaper
+  - `processPaper.ts` - processPaper (wraps EDC + Integration workflows)
+  - `queryKG.ts` - queryKnowledgeGraph, summarizeKnowledgeGraph
+
+### Pipeline Stages (EDC Workflow)
+- **Workflows**: [src/pipeline/workflow/](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/pipeline/workflow/) - Event-driven workflows
+  - `edcWorkflow.ts` - Load → Pre-Parse → Extract → Define → Canonicalize → Save
+  - `integrationWorkflow.ts` - Retrieve Candidates → Resolve → Persist
+- **Pre-Parse**: [src/pipeline/extract/preParser.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/pipeline/extract/preParser.ts) - LlamaExtract metadata extraction
+- **Extract**: [src/pipeline/extract/index.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/pipeline/extract/index.ts) - Entity and relationship extraction
+- **Define**: [src/pipeline/define/index.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/pipeline/define/index.ts) - Type refinement and definition
+- **Canonicalize**: [src/pipeline/canonicalize/index.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/pipeline/canonicalize/index.ts) - Intra-document deduplication
+
+### Storage
+- **Store**: [src/storage/drizzleStore.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/storage/drizzleStore.ts) - Drizzle ORM + Supabase client
+- **Schema**: [src/storage/schema.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/storage/schema.ts) - Postgres tables with pgvector
+- **Config**: [src/config/index.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/config/index.ts) - Centralized environment variables
+
+### Types
+- **Domain Types**: [src/types/domain.ts](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/types/domain.ts) - Entity, Relationship, GraphData
+- **Interfaces**: [src/types/interfaces/](file:///Users/pawanpaleja/VScodeProjects/alaris-takehome/src/types/interfaces/) - Pipeline and storage interfaces
+
+---
+
+## Architecture Diagrams
+
+Key diagrams are embedded in the following documents:
+
+- **System Overview**: [agentic-architecture.md](./agentic-architecture.md)
+  - Central Controller architecture
+  - Tool ecosystem
+  - Data flow from user request to persistent storage
+
+- **Pipeline Details**: 
+  - [edc-workflow.md](./edc-workflow.md) - Extraction → Definition → Canonicalization pipeline
+  - [integration-workflow.md](./integration-workflow.md) - Graph merging and entity resolution
+
+- **Tool Definitions**: [agentic-flows.md](./agentic-flows.md) - Orchestrator tools and workflows
+
+---
+
+## Design Principles
+
+- **Event-Driven Workflows**: Uses `@llamaindex/workflow-core` for pipeline orchestration
+- **Single Persistent Store**: Drizzle + Supabase with pgvector (no separate ephemeral vector store)
+- **Idempotency**: Entity IDs are deterministic for safe re-processing
+- **Provenance Tracking**: All relationships track `sourcePaperId` for traceability
+- **Agentic Reasoning**: Central Controller uses ReACT loop (Reason → Act → Observe)
+
+---
+
+## Storage Architecture
+
+### Database Schema (Simplified)
+
+**Entities Table**:
+```typescript
+{
+  id: text (PK)              // Deterministic entity ID
+  name: text                 // Entity name
+  type: text                 // Entity type (e.g., "Method", "Dataset")
+  description: text          // Entity description
+  aliases: text[]            // Alternative names
+  metadata: jsonb            // Additional structured data
+  embedding: vector(768)     // pgvector embedding for similarity search
+}
+```
+
+**Relationships Table**:
+```typescript
+{
+  sourceId: text (FK)        // Source entity ID
+  targetId: text (FK)        // Target entity ID
+  type: text                 // Relationship type
+  description: text          // Relationship description
+  sourcePaperId: text        // Provenance: which paper extracted this
+  confidence: text           // Extraction confidence
+  metadata: jsonb            // Additional data
+}
+```
+
+### Vector Search
+- **Embeddings**: Stored directly in `entities.embedding` column (768-dimensional)
+- **Similarity Search**: Uses pgvector's cosine distance for entity resolution
+- **No Ephemeral Store**: All embeddings are persistent (no TTL or cleanup needed)
+
+---
+
+## Key Workflows
+
+### EDC Pipeline (Extraction → Definition → Canonicalization)
+See [edc-workflow.md](./edc-workflow.md) for detailed flow.
+
+**Stages**:
+1. **Load**: Parse PDF to text (LlamaParse)
+2. **Pre-Parse**: Extract structured metadata (LlamaExtract)
+3. **Extract**: Identify entities and relationships (LLM)
+4. **Define**: Refine types and definitions (LLM)
+5. **Canonicalize**: Deduplicate within document
+6. **Save**: Persist to database
+
+**Debug Artifacts**: `debug/00_preparsed.json`, `debug/01_extraction.json`, `debug/02_definition.json`, `debug/03_canonicalization.json`
+
+### Integration Workflow (Graph Merging)
+See [integration-workflow.md](./integration-workflow.md) for detailed flow.
+
+**Phases**:
+1. **Retrieve Candidates**: Vector search for similar entities
+2. **Entity Resolution**: LLM decides MERGE vs CREATE
+3. **Persist**: Save resolved graph with updated relationships
+
+---
+
+## Next Steps
+
+For implementation details and code-level documentation:
+- See individual workflow documentation ([edc-workflow.md](./edc-workflow.md), [integration-workflow.md](./integration-workflow.md))
+- Review [agentic-architecture.md](./agentic-architecture.md) for orchestrator details
+- Check source files directly (all paths linked above)

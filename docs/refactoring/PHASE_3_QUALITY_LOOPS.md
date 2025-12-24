@@ -51,7 +51,7 @@ LoadEvent → ExtractEvent → [Quality Check] → DefineEvent → [Quality Chec
 **File**: `src/pipeline/workflow/qualityAssessment.ts`
 
 ```typescript
-import type { GraphData, Entity } from "../../types/domain.js";
+import type { GraphData, Entity } #types/domain.js";
 
 /**
  * Quality scores for different aspects of extraction
@@ -353,7 +353,7 @@ workflow.handle([extractEvent], async (context, event) => {
 
 ```typescript
 import { workflowEvent } from "@llamaindex/workflow-core";
-import type { GraphData } from "../../types/domain.js";
+import type { GraphData } #types/domain.js";
 
 // ... existing events ...
 

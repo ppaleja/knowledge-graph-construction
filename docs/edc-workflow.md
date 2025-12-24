@@ -9,10 +9,11 @@ This document outlines the Extraction-Definition-Canonicalization (EDC) pipeline
 
 The pipeline executes a sequential series of transformations:
 1.  **Load**: Ingests the raw PDF document.
-2.  **Extract**: Identifies initial entities and relationships using an LLM.
-3.  **Define**: Refines entity types and definitions.
-4.  **Canonicalize**: Resolves duplicates *within* the single document scope.
-5.  **Save**: Persists the structured graph to the database.
+2.  **Pre-Parse**: Extracts structured metadata (title, authors, abstract) using LlamaExtract.
+3.  **Extract**: Identifies initial entities and relationships using an LLM with pre-parsed context.
+4.  **Define**: Refines entity types and definitions.
+5.  **Canonicalize**: Resolves duplicates *within* the single document scope.
+6.  **Save**: Persists the structured graph to the database.
 
 ## Mermaid Graph
 
@@ -26,18 +27,32 @@ graph TD
         direction TB
         S1_Start[Receive Paper Path] --> S1_Loader[LlamaParseLoader]
         S1_Loader --> S1_Load[Load & Parse Text]
-        S1_Load --> S1_Emit[Emit extractEvent]
+        S1_Load --> S1_Emit[Emit preParsedEvent]
     end
 
     %% Transitions
-    Step1 -->|extractEvent| Step2
+    Step1 -->|preParsedEvent| Step1b
     Step1 -.->|Error| ErrorHandler
+
+    %% Step 1b: Pre-Parse
+    subgraph Step1b [Step 1b: Pre-Parse]
+        direction TB
+        S1b_Start[Receive Text] --> S1b_PreParser[PreParser Process]
+        S1b_PreParser --> S1b_Extract[Extract Metadata via LlamaExtract]
+        S1b_Extract --> S1b_Context[Generate PaperContext]
+        S1b_Context --> S1b_Debug[Save 00_preparsed.json]
+        S1b_Debug --> S1b_Emit[Emit extractEvent]
+    end
+
+    %% Transitions
+    Step1b -->|extractEvent| Step2
+    Step1b -.->|Error| ErrorHandler
 
     %% Step 2: Extract
     subgraph Step2 [Step 2: Extract]
         direction TB
-        S2_Start[Receive Text] --> S2_Extractor[Extractor Process]
-        S2_Extractor --> S2_LLM[LLM Extraction]
+        S2_Start[Receive Text + Context] --> S2_Extractor[Extractor Process]
+        S2_Extractor --> S2_LLM[LLM Extraction with Context]
         S2_LLM --> S2_RawGraph[Generate Raw Graph]
         S2_RawGraph --> S2_Debug[Save 01_extraction.json]
         S2_Debug --> S2_Emit[Emit defineEvent]
@@ -96,6 +111,7 @@ graph TD
 
     %% Styling
     style Step1 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style Step1b fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
     style Step2 fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
     style Step3 fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
     style Step4 fill:#e0f2f1,stroke:#00695c,stroke-width:2px
@@ -110,9 +126,16 @@ graph TD
 *   **Logic**: Uses `LlamaParseLoader` to parse the PDF at the given path into a text string.
 *   **Output**: Raw text content of the paper.
 
-### 2. Extract (Entities & Relationships)
+### 1b. Pre-Parse (Metadata Extraction)
 *   **Input**: Raw text
-*   **Logic**: uses the `Extractor` module (backed by an LLM) to identify scientific entities (Chemicals, Proteins, etc.) and relationships (Interactions, Pathways) from the unstructured text.
+*   **Logic**: Uses the `PreParser` module (backed by LlamaExtract) to extract structured metadata from the paper, including title, authors, abstract, and key concepts.
+*   **Output**: A `PaperContext` object with structured metadata.
+*   **Artifacts**: Saves `debug/00_preparsed.json`.
+*   **Purpose**: Provides context to improve entity extraction accuracy in the next stage.
+
+### 2. Extract (Entities & Relationships)
+*   **Input**: Raw text + `PaperContext` (from pre-parse)
+*   **Logic**: uses the `Extractor` module (backed by an LLM) to identify scientific entities (Chemicals, Proteins, etc.) and relationships (Interactions, Pathways) from the unstructured text, leveraging the pre-parsed context for better accuracy.
 *   **Output**: A raw `GraphData` object containing entities and relationships.
 *   **Artifacts**: Saves `debug/01_extraction.json`.
 

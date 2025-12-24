@@ -49,8 +49,8 @@ LIMIT 5;
 Create a test script `scripts/test_vector_search.ts`:
 
 ```typescript
-import { db } from "../src/storage/index.js";
-import { entities } from "../src/storage/schema.js";
+import { db } #storage/index.js";
+import { entities } #storage/schema.js";
 import { cosineDistance, sql } from 'drizzle-orm';
 import { generateEmbedding } from '../src/utils/embeddings.js';
 

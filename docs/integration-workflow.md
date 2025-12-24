@@ -71,7 +71,8 @@ graph TD
         
         %% Reconstruct Graph
         S2_Done -- Yes --> S2_Rebuild[Rebuild Graph with Resolved IDs]
-        S2_Rebuild --> S2_Emit[Emit entitiesResolvedEvent]
+        S2_Rebuild --> S2_ExtractRefs[Extract referencedEntityIds (Merge Targets)]
+        S2_ExtractRefs --> S2_Emit[Emit entitiesResolvedEvent]
     end
 
     %% Transitions
@@ -125,9 +126,12 @@ graph TD
     *   **Graph Rebuilding**:
         *   Filter out entities marked for MERGE (they are replaced by existing ones).
         *   Update all relationships to point to the resolved IDs (so relationships connect to the *merged* nodes correctly).
-*   **Output**: `resolvedGraph` (deduplicated), `mergeLog` (audit trail).
+        *   **Referenced Entities**: Identify IDs that exist in the DB (merge targets) but are not in the current graph. Add them to `referencedEntityIds` to prevent orphan relationship errors during persistence.
+*   **Output**: `resolvedGraph` (deduplicated, with valid `referencedEntityIds`), `mergeLog` (audit trail).
 
 ### 3. Persist
 *   **Input**: `resolvedGraph`
-*   **Logic**: usage of `store.saveGraph` to upsert nodes and insert relationships into the database.
+*   **Logic**: 
+    *   Validate relationships against both current `entities` and `referencedEntityIds`.
+    *   Upsert nodes and insert relationships into the database using `DrizzleGraphStore`.
 *   **Output**: emits `integrationCompleteEvent` with success status and stats.

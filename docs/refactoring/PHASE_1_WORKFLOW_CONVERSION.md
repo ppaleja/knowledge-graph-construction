@@ -52,7 +52,7 @@ npm install @llamaindex/workflow-core
 
 ```typescript
 import { workflowEvent } from "@llamaindex/workflow-core";
-import type { GraphData } from "../../types/domain.js";
+import type { GraphData } #types/domain.js";
 
 // Event fired to start the pipeline with a paper path
 export const loadEvent = workflowEvent<{ paperPath: string }>();
@@ -112,11 +112,11 @@ import {
   completeEvent,
   errorEvent,
 } from "./events.js";
-import { LlamaParseLoader } from "../../ingestion/loader.js";
+import { LlamaParseLoader } #ingestion/loader.js";
 import { Extractor } from "../extract/index.js";
 import { Definer } from "../define/index.js";
 import { Canonicalizer } from "../canonicalize/index.js";
-import { DrizzleGraphStore } from "../../storage/drizzleStore.js";
+import { DrizzleGraphStore } #storage/drizzleStore.js";
 import * as fs from "fs/promises";
 import * as path from "path";
 
