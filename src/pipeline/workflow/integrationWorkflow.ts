@@ -121,7 +121,8 @@ export function createIntegrationWorkflow() {
                 const response = await llm.complete({ prompt });
 
                 try {
-                    const decision = JSON.parse(response.text);
+                    const cleanedJson = response.text.replace(/```json\n?|\n?```/g, "").trim();
+                    const decision = JSON.parse(cleanedJson);
                     const mergeDecision: MergeDecision = {
                         newEntityId: entity.id,
                         action: decision.action,
