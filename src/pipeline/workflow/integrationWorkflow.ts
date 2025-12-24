@@ -47,17 +47,11 @@ export function createIntegrationWorkflow() {
             const store = new DrizzleGraphStore();
             await store.init();
 
-            // Fetch candidates for each entity
-            const candidates = new Map<string, Entity[]>();
-            for (const entity of newGraph.entities) {
-                const similar = await store.fetchSimilarEntities(entity);
-                if (similar.length > 0) {
-                    candidates.set(entity.id, similar);
-                    console.log(
-                        `[Integration] Found ${similar.length} candidates for "${entity.name}"`,
-                    );
-                }
-            }
+            // Batch fetch candidates for all entities
+            const candidates = await store.fetchSimilarEntitiesBatch(newGraph.entities);
+            console.log(
+                `[Integration] Found candidates for ${candidates.size} entities`,
+            );
 
             // Do not close connection here as it's shared
             // await store.close();
@@ -100,65 +94,105 @@ export function createIntegrationWorkflow() {
             const mergeLog: MergeDecision[] = [];
             const idMapping = new Map<string, string>(); // newId -> resolvedId
 
-            // Process each entity that has candidates
-            for (const entity of newGraph.entities) {
+            // Helper for concurrency control
+            const parallelWithLimit = async <T, R>(
+                items: T[],
+                fn: (item: T) => Promise<R>,
+                limit: number
+            ): Promise<R[]> => {
+                const results: R[] = [];
+                for (let i = 0; i < items.length; i += limit) {
+                    const batch = items.slice(i, i + limit);
+                    const batchResults = await Promise.all(batch.map(fn));
+                    results.push(...batchResults);
+                }
+                return results;
+            };
+
+            // Prepare resolution tasks as thunks (deferred execution)
+            const resolutionTasks = newGraph.entities.map((entity) => async () => {
                 const entityCandidates = candidates.get(entity.id);
 
                 if (!entityCandidates || entityCandidates.length === 0) {
                     // No candidates, keep as new
-                    idMapping.set(entity.id, entity.id);
-                    mergeLog.push({
-                        newEntityId: entity.id,
-                        action: "CREATE",
-                        confidence: 1.0,
-                        rationale: "No similar entities found",
-                    });
-                    continue;
+                    return {
+                        entityId: entity.id,
+                        targetId: entity.id,
+                        log: {
+                            newEntityId: entity.id,
+                            action: "CREATE" as const,
+                            confidence: 1.0,
+                            rationale: "No similar entities found",
+                        }
+                    };
                 }
 
                 // Call LLM with resolution prompt
                 const prompt = entityResolutionPrompt(entity, entityCandidates);
-                const response = await llm.complete({ prompt });
-
                 try {
+                    const response = await llm.complete({ prompt });
                     const cleanedJson = response.text.replace(/```json\n?|\n?```/g, "").trim();
                     const decision = JSON.parse(cleanedJson);
-                    const mergeDecision: MergeDecision = {
-                        newEntityId: entity.id,
-                        action: decision.action,
-                        targetId: decision.targetId,
-                        confidence: decision.confidence,
-                        rationale: decision.rationale,
-                    };
 
-                    mergeLog.push(mergeDecision);
+                    const isMerge = decision.action === "MERGE" && decision.targetId;
+                    const finalTargetId = isMerge ? decision.targetId : entity.id;
 
-                    if (decision.action === "MERGE" && decision.targetId) {
-                        idMapping.set(entity.id, decision.targetId);
+                    if (isMerge) {
                         console.log(
                             `[Integration] MERGE: "${entity.name}" → "${decision.targetId}" (confidence: ${decision.confidence})`,
                         );
                     } else {
-                        idMapping.set(entity.id, entity.id);
                         console.log(
                             `[Integration] CREATE: "${entity.name}" (confidence: ${decision.confidence})`,
                         );
                     }
+
+                    return {
+                        entityId: entity.id,
+                        targetId: finalTargetId,
+                        log: {
+                            newEntityId: entity.id,
+                            action: decision.action as "MERGE" | "CREATE",
+                            targetId: decision.targetId,
+                            confidence: decision.confidence,
+                            rationale: decision.rationale,
+                        } as MergeDecision
+                    };
                 } catch (parseError) {
                     console.error(
-                        `[Integration] Failed to parse LLM response for ${entity.name}:`,
-                        response.text,
+                        `[Integration] Failed to parse LLM response for ${entity.name}`,
                     );
                     // Default to CREATE on parse error
-                    idMapping.set(entity.id, entity.id);
-                    mergeLog.push({
-                        newEntityId: entity.id,
-                        action: "CREATE",
-                        confidence: 0.0,
-                        rationale: "LLM response parse error",
-                    });
+                    return {
+                        entityId: entity.id,
+                        targetId: entity.id,
+                        log: {
+                            newEntityId: entity.id,
+                            action: "CREATE" as const,
+                            confidence: 0.0,
+                            rationale: "LLM response parse error",
+                        }
+                    };
                 }
-            }
+            });
+
+            // Run with concurrency limit of 10
+            type ResolverResult = {
+                entityId: string;
+                targetId: string;
+                log: MergeDecision;
+            };
+            const results = await parallelWithLimit<() => Promise<ResolverResult>, ResolverResult>(
+                resolutionTasks,
+                (task) => task(),
+                10
+            );
+
+            // Aggregate results
+            results.forEach(r => {
+                idMapping.set(r.entityId, r.targetId);
+                mergeLog.push(r.log);
+            });
 
             // Build resolved graph with updated IDs
             const resolvedEntities: Entity[] = [];
