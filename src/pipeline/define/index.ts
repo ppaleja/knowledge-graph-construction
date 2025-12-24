@@ -69,15 +69,22 @@ export class Definer implements IDefiner {
         }
 
         // Merge refined types back into original entities
-        const entityMap = new Map(input.entities.map((n: Entity) => [n.id, n]));
+        const refinedMap = new Map(refinedEntities.map((r: Entity) => [r.id, r]));
 
-        const finalEntities = refinedEntities.map(refined => {
-            const original = entityMap.get(refined.id) || entityMap.get(refined.name) || refined;
-            return {
-                ...original,
-                type: refined.type,
-                name: refined.name
-            };
+        // Validation warning
+        if (refinedEntities.length !== input.entities.length) {
+            console.warn(`[${this.name}] LLM returned ${refinedEntities.length} entities, expected ${input.entities.length}`);
+        }
+
+        // Ensure ALL original entities are preserved
+        const finalEntities = input.entities.map((original: Entity) => {
+            const refined = refinedMap.get(original.id);
+            if (refined) {
+                return { ...original, type: refined.type, name: refined.name };
+            } else {
+                console.warn(`[${this.name}] Entity "${original.name}" not returned by LLM. Keeping original.`);
+                return original;
+            }
         });
 
         return {

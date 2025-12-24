@@ -219,9 +219,17 @@ export function createIntegrationWorkflow() {
                 }),
             );
 
+            // Extract merge target IDs (entities that exist in DB but not in resolvedEntities)
+            const mergeTargetIds = [...new Set(
+                Array.from(idMapping.values()).filter(targetId =>
+                    !resolvedEntities.some(e => e.id === targetId)
+                )
+            )];
+
             const resolvedGraph: GraphData = {
                 entities: resolvedEntities,
                 relationships: resolvedRelationships,
+                ...(mergeTargetIds.length > 0 && { referencedEntityIds: mergeTargetIds }),
             };
 
             // Save merge log to debug
