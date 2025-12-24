@@ -1,72 +1,41 @@
-export interface PreparsedPaperContext {
-  title: string;
-  authors: Array<{ name: string; affiliation?: string; email?: string }>;
-  abstract: string;
-  keywords?: string[];
-  mainFindings: string[];
-  methodology?: {
-    approach?: string;
-    participants?: string;
-    methods?: string[];
-  };
-  results?: Array<{
-    finding?: string;
-    significance?: string;
-    supportingData?: string;
-  }>;
-  discussion?: {
-    implications?: string[];
-    limitations?: string[];
-    futureWork?: string[];
-  };
-  references?: Array<{
-    title: string;
-    authors: string;
-    year?: string;
-    relevance?: string;
-  }>;
-  publication?: {
-    journal?: string;
-    year?: string;
-    doi?: string;
-    url?: string;
-  };
-}
+/**
+ * Core domain types for the knowledge graph
+ * These represent the fundamental building blocks of our graph data model
+ */
 
+/**
+ * Entity - A node in the knowledge graph
+ * Represents a concept, method, metric, task, or any extractable entity from papers
+ */
 export interface Entity {
   id: string;
   name: string;
-  type: string; // e.g., "Method", "Metric", "Task"
+  type: string; // e.g., "Method", "Metric", "Task", "Dataset"
   description?: string;
+  aliases?: string[]; // Alternative names/abbreviations for entity resolution
   metadata?: Record<string, any>;
 }
 
+/**
+ * Relationship - An edge in the knowledge graph
+ * Represents a connection between two entities
+ */
 export interface Relationship {
   sourceId: string; // Refers to Entity.id
   targetId: string; // Refers to Entity.id
   type: string; // e.g., "improves_on", "uses", "evaluated_on"
   description?: string;
+  confidence?: number; // Confidence score 0.0-1.0
+  sourcePaperId?: string; // OpenAlex Work ID for provenance
   metadata?: Record<string, any>;
 }
 
+/**
+ * GraphData - A complete knowledge graph structure
+ * Contains entities, relationships, and metadata about referenced entities
+ */
 export interface GraphData {
   entities: Entity[];
   relationships: Relationship[];
   referencedEntityIds?: string[]; // IDs of entities in DB referenced by relationships but not in entities array
-}
-
-export interface IPipelineStep<TInput, TOutput> {
-  name: string;
-  process(input: TInput): Promise<TOutput>;
-}
-
-export interface IExtractor {
-  name: string;
-  process(text: string, context?: PreparsedPaperContext): Promise<GraphData>;
-}
-export interface IDefiner extends IPipelineStep<GraphData, GraphData> {
-  consolidateSchema(graph: GraphData): Promise<void>;
-}
-export interface ICanonicalizer extends IPipelineStep<GraphData, GraphData> {
-  resolveEntities(nodes: Entity[]): Promise<Entity[]>;
 }

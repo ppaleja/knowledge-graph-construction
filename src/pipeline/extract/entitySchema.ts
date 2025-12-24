@@ -19,7 +19,7 @@ export const entitySchema = {
                     },
                     type: {
                         type: "string",
-                        enum: ["Method", "Metric", "Task", "Dataset", "Concept", "Author", "Conference"],
+                        enum: ["Method", "Metric", "Task", "Dataset", "Concept"],
                         description: "Entity type category",
                     },
                     description: {
