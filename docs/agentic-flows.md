@@ -48,30 +48,30 @@ This document defines the **end-to-end agentic flows** that the Central Controll
 
 | Tool | Input | Output | Current Status |
 |------|-------|--------|----------------|
-| `searchPapers` | `{query, limit}` | `{papers: [{id, title, citationCount}]}` | ⚠️ Refactor: lift hardcoded query |
-| `getCitations` | `{paperId, limit}` | `{papers: [...]}` | 🔴 New: use SS `/paper/{id}/citations` |
-| `downloadPaper` | `{paperId}` | `{path: string}` | ⚠️ Extract from collector |
+| `searchPapers` | `{query, limit}` | `{papers: [{id, title, citationCount}]}` | ✅ Implemented (OpenAlex) |
+| `getCitations` | `{paperId, limit}` | `{papers: [...]}` | ✅ Implemented (OpenAlex) |
+| `downloadPaper` | `{paperId}` | `{path: string}` | ✅ Implemented |
 
 ### 2. `processPaper`
 **Purpose**: Full EDC pipeline + integration for a single paper  
 **Input**: `{ paperPath: string }`  
 **Output**: `{ entities: Entity[], relationships: Relationship[], stats: { merged: number, created: number } }`  
 **Current Implementation**: edcWorkflow + integrationWorkflow  
-**Status**: ⚠️ Needs refactor - currently returns void, needs to return graph data
+**Status**: ✅ Implemented (Wraps workflow events)
 
 ### 3. `queryKnowledgeGraph`
 **Purpose**: Ask questions about the current KG state  
 **Input**: `{ query: string }` (e.g., "What papers improve on NeRF?")  
 **Output**: `{ results: any[] }`  
 **Current Implementation**: ❌ Does not exist  
-**Status**: 🔴 New - needed for agent to reason about KG
+**Status**: ✅ Implemented (Drizzle store extension)
 
 ### 4. `summarizeKnowledgeGraph`
 **Purpose**: Generate a summary of what's in the KG  
 **Input**: `{}`  
 **Output**: `{ totalEntities: number, totalRelationships: number, topEntities: Entity[], summary: string }`  
 **Current Implementation**: ❌ Does not exist  
-**Status**: 🔴 New - needed for final output
+**Status**: ✅ Implemented
 
 ---
 
@@ -147,11 +147,11 @@ This is where ReACT reasoning adds value over sequential workflows.
 
 ## Summary: Tools Needed
 
-| Tool | Exists? | Refactor Needed? |
-|------|---------|-----------------|
-| `collectPapers` | ✅ | Return paths |
-| `collectCitations` | ❌ | New (optional) |
-| `processPaper` | ✅ (split) | Combine + return data |
-| `queryKnowledgeGraph` | ❌ | New |
-| `summarizeKnowledgeGraph` | ❌ | New |
-| `listProcessedPapers` | ❌ | New (simple) |
+| Tool | Exists? | Status |
+|------|---------|--------|
+| `searchPapers` | ✅ | Done (OpenAlex) |
+| `getCitations` | ✅ | Done (OpenAlex) |
+| `downloadPaper` | ✅ | Done |
+| `processPaper` | ✅ | Done |
+| `queryKnowledgeGraph` | ✅ | Done |
+| `summarizeKnowledgeGraph` | ✅ | Done |
