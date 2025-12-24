@@ -1,5 +1,8 @@
 # Integration Workflow Documentation
 
+
+> **Agentic Context**: This workflow is automatically triggered by the `processPaper` tool after EDC completes. It handles the "Memory" aspect of the agent, merging new knowledge into the existing Long-Term Memory (Postgres).
+
 This document outlines the integration workflow pipeline, which handles the merging of newly extracted knowledge graph data with the existing persisted graph.
 
 ## Workflow Overview

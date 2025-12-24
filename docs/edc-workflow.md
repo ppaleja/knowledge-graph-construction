@@ -1,5 +1,8 @@
 # EDC Pipeline Workflow Documentation
 
+
+> **Agentic Context**: This workflow is now wrapped by the `processPaper` tool in the agentic architecture. The agent invokes this entire pipeline as a single atomic action.
+
 This document outlines the Extraction-Definition-Canonicalization (EDC) pipeline, which transforms raw scientific papers into structured Knowledge Graphs.
 
 ## Workflow Overview
