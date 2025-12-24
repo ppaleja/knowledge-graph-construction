@@ -44,8 +44,8 @@ This is the core processing engine, running sequentially for each paper.
 A separate, decoupled workflow that merges new data into the master graph.
 
 *   **Candidate Retrieval**:
-    *   Queries `entities` table using fuzzy text matching (`ILIKE`) to find potential duplicates.
-    *   *Note*: Fast and effective for names with slight variations.
+    *   **Vector Search**: Uses `pgvector` + Gemini Embeddings (768d) to find semantically similar entities using Cosine Distance.
+    *   *Upgrade*: Replaced basic string matching (`ILIKE`) with semantic understanding (e.g., "NeRF" ~= "Neural Radiance Field").
 *   **LLM Resolution ("The Historian")**:
     *   Compares the New Entity vs. Candidate Entities.
     *   Decides to **MERGE** (use existing ID) or **CREATE** (new ID).
@@ -90,9 +90,9 @@ We have successfully tested the pipeline on two distinct inputs:
 
 While the MVP works, the following would be the immediate next steps for a production system:
 
-1.  **Vector Semantic Search (Phase 2)**
-    *   *Current*: Text matching (`ILIKE`). Limits finding synonyms with no overlapping words.
-    *   *Upgrade*: Generate embeddings (OpenAI/Gemini) for entities. Use `cosineDistance` to find candidates.
+93: 1.  **Schema Alignment Agent**
+94:     *   *Current*: LLM tries to adhere to prompt instructions.
+95:     *   *Upgrade*: A dedicated agent to enforce a strict Ontology (e.g., ensure all "3D Methods" map to `class: Method` property `subclass: 3D`).
 
 2.  **Schema Alignment Agent**
     *   *Current*: LLM tries to adhere to prompt instructions.

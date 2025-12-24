@@ -107,7 +107,10 @@ graph TD
 
 ### 1. Retrieve Candidates
 *   **Input**: `newGraph` (from extraction), `paperPath`
-*   **Logic**: Iterates through every entity in the new graph and queries the `DrizzleGraphStore` for semantically similar entities (embeddings-based search).
+*   **Logic**: 
+    *   Iterates through every entity in the new graph.
+    *   Generates a 768d vector embedding using Gemini (`@llamaindex/google`).
+    *   Queries `DrizzleGraphStore` using `pgvector` Cosine Distance (`cosineDistance` < threshold) to find semantically similar entities.
 *   **Output**: A `Map<string, Entity[]>` mapping new entity IDs to lists of existing similar entities from the DB.
 
 ### 2. Entity Resolution
