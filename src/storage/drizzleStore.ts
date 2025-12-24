@@ -1,6 +1,7 @@
 import { db, client } from "./index.js";
 import { entities, relationships } from "./schema.js";
 import type { GraphData, Entity, Relationship } from "../types/domain.js";
+import { sql, ilike, eq, or } from "drizzle-orm";
 
 // Interface must match what Orchestrator expects. 
 // Previously: export interface IGraphStore { init(): Promise<void>; saveGraph(graph: GraphData): Promise<void>; close(): Promise<void>; }
@@ -27,8 +28,6 @@ export class DrizzleGraphStore implements IGraphStore {
         if (graph.entities.length > 0) {
             // Use SERIALIZABLE isolation for strongest concurrency guarantees
             await db.transaction(async (tx) => {
-                const { sql } = await import("drizzle-orm");
-                
                 // Set transaction isolation level to SERIALIZABLE
                 await tx.execute(sql`SET TRANSACTION ISOLATION LEVEL SERIALIZABLE`);
 
@@ -80,8 +79,6 @@ export class DrizzleGraphStore implements IGraphStore {
      * which uses SERIALIZABLE transactions and optimistic concurrency control.
      */
     async fetchSimilarEntities(entity: Entity): Promise<Entity[]> {
-        const { ilike, eq, or, sql } = await import("drizzle-orm");
-
         try {
             // Search for entities with similar names OR same type
             // ILIKE is case-insensitive pattern matching
