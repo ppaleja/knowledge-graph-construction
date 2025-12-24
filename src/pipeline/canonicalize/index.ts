@@ -3,7 +3,7 @@ import { CANONICALIZE_PROMPT } from "../../prompts/canonicalize.js";
 import { Settings } from "llamaindex";
 
 export class Canonicalizer implements ICanonicalizer {
-    name = "The Librarian";
+    name = "[Deduplicator]";
 
     async process(input: GraphData): Promise<GraphData> {
         console.log(`[${this.name}] Resolving ${input.entities.length} entities...`);

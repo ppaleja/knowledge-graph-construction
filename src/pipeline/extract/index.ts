@@ -4,7 +4,7 @@ import { entitySchema } from "./entitySchema.js";
 import { relationshipSchema } from "./relationshipSchema.js";
 
 export class Extractor implements IExtractor {
-    name = "The Dreamer";
+    name = "[Extractor]";
     private llamaExtract: LlamaExtract;
 
     constructor() {

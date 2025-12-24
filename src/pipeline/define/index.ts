@@ -3,7 +3,7 @@ import { DEFINE_PROMPT } from "../../prompts/define.js";
 import { Settings } from "llamaindex";
 
 export class Definer implements IDefiner {
-    name = "The Architect";
+    name = "[TypeRefiner]";
 
     async process(input: GraphData): Promise<GraphData> {
         console.log(`[${this.name}] Refining types for ${input.entities.length} entities...`);
@@ -35,7 +35,16 @@ export class Definer implements IDefiner {
                 let batchRefined: Entity[] = [];
 
                 try {
-                    const parsed = JSON.parse(typeof rawOutput === 'string' ? rawOutput : JSON.stringify(rawOutput));
+                    let cleanedOutput = rawOutput;
+                    if (typeof rawOutput === 'string') {
+                        cleanedOutput = rawOutput
+                            .replace(/^```json\s*/, "")
+                            .replace(/^```\s*/, "")
+                            .replace(/\s*```$/, "")
+                            .trim();
+                    }
+
+                    const parsed = JSON.parse(typeof cleanedOutput === 'string' ? cleanedOutput : JSON.stringify(cleanedOutput));
                     if (Array.isArray(parsed.entities)) {
                         batchRefined = parsed.entities;
                     } else if (Array.isArray(parsed)) {
@@ -50,14 +59,12 @@ export class Definer implements IDefiner {
                     }
 
                 } catch (e) {
-                    console.error(`[${this.name}] Failed to parse JSON for batch ${Math.floor(i / BATCH_SIZE) + 1}. Error: ${e}`);
-                    console.error(`[${this.name}] Raw output start: ${typeof rawOutput === 'string' ? rawOutput.substring(0, 100) : 'Not a string'}`);
-                    // Fallback to original batch
-                    refinedEntities.push(...batch);
+                    // Propagate error up the stack
+                    throw new Error(`[${this.name}] Failed to parse JSON for batch ${Math.floor(i / BATCH_SIZE) + 1}. Raw output: ${typeof rawOutput === 'string' ? rawOutput.substring(0, 50) + "..." : "Not a string"}. Error: ${e}`);
                 }
             } catch (llmError) {
-                console.error(`[${this.name}] LLM error for batch ${Math.floor(i / BATCH_SIZE) + 1}: ${llmError}`);
-                refinedEntities.push(...batch);
+                // Propagate LLM errors (network, etc)
+                throw new Error(`[${this.name}] LLM error for batch ${Math.floor(i / BATCH_SIZE) + 1}: ${llmError}`);
             }
         }
 
