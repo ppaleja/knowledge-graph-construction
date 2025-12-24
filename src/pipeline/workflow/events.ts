@@ -1,5 +1,6 @@
 import { workflowEvent } from "@llamaindex/workflow-core";
-import type { GraphData, PreparsedPaperContext } from "../../types/domain.js";
+import type { GraphData } from "#types/domain.js";
+import type { PreparsedPaperContext } from "#types/preparsedContext.js";
 
 /** Event fired to start the pipeline with a paper path */
 export const loadEvent = workflowEvent<{ paperPath: string }>();

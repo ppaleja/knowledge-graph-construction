@@ -1,5 +1,6 @@
-import type { ICanonicalizer, GraphData, Entity, Relationship } from "../../types/domain.js";
-import { CANONICALIZE_PROMPT } from "../../prompts/canonicalize.js";
+import type { GraphData, Entity, Relationship } from "#types/domain.js";
+import type { ICanonicalizer } from "#types/interfaces/pipeline.js";
+import { CANONICALIZE_PROMPT } from "#prompts/canonicalize.js";
 import { Settings } from "llamaindex";
 
 export class Canonicalizer implements ICanonicalizer {

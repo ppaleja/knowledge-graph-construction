@@ -5,7 +5,7 @@ import {
     getCitations,
     downloadPaper,
     type PaperMetadata,
-} from "../../ingestion/collector.js";
+} from "#ingestion/collector.js";
 
 /**
  * TOOL: Search for papers by query

@@ -1,7 +1,7 @@
 import { tool } from "llamaindex";
 import { z } from "zod";
-import { DrizzleGraphStore } from "../../storage/drizzleStore.js";
-import type { Entity } from "../../types/domain.js";
+import { DrizzleGraphStore } from "#storage/drizzleStore.js";
+import type { Entity } from "#types/domain.js";
 
 /**
  * TOOL: Query the knowledge graph

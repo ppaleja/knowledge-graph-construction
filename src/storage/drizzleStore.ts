@@ -1,18 +1,11 @@
 import { db, client } from "./index.js";
 import { entities, relationships } from "./schema.js";
-import type { GraphData, Entity, Relationship } from "../types/domain.js";
+import type { GraphData, Entity, Relationship } from "#types/domain.js";
+import type { IGraphStore } from "#types/interfaces/storage.js";
 import { cosineDistance, desc, gt, sql, isNotNull } from 'drizzle-orm';
 import { generateEmbedding, createEntityText } from '../utils/embeddings.js';
 
-// Interface must match what Orchestrator expects. 
-// Previously: export interface IGraphStore { init(): Promise<void>; saveGraph(graph: GraphData): Promise<void>; close(): Promise<void>; }
 
-export interface IGraphStore {
-    init(): Promise<void>;
-    saveGraph(graph: GraphData): Promise<void>;
-    fetchSimilarEntities(entity: Entity): Promise<Entity[]>;
-    close(): Promise<void>;
-}
 
 export class DrizzleGraphStore implements IGraphStore {
     async init(): Promise<void> {

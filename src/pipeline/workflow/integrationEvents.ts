@@ -1,5 +1,5 @@
 import { workflowEvent } from "@llamaindex/workflow-core";
-import type { GraphData, Entity } from "../../types/domain.js";
+import type { GraphData, Entity } from "#types/domain.js";
 
 /**
  * Triggered to start the integration workflow with a newly extracted graph

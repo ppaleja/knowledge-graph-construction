@@ -9,15 +9,15 @@ import {
   completeEvent,
   errorEvent,
 } from "./events.js";
-import { LlamaParseLoader } from "../../ingestion/loader.js";
+import { LlamaParseLoader } from "#ingestion/loader.js";
 import { PreParser } from "../extract/preParser.js";
 import { Extractor } from "../extract/index.js";
 import { Definer } from "../define/index.js";
 import { Canonicalizer } from "../canonicalize/index.js";
-import { DrizzleGraphStore } from "../../storage/drizzleStore.js";
+import { DrizzleGraphStore } from "#storage/drizzleStore.js";
 import * as fs from "fs/promises";
 import * as path from "path";
-import type { GraphData } from "../../types/domain.js";
+import type { GraphData } from "#types/domain.js";
 
 export function createEDCWorkflow() {
   const workflow = createWorkflow();

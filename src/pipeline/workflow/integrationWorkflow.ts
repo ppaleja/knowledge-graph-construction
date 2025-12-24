@@ -7,11 +7,11 @@ import {
     integrationErrorEvent,
     type MergeDecision,
 } from "./integrationEvents.js";
-import { DrizzleGraphStore } from "../../storage/drizzleStore.js";
-import { entityResolutionPrompt } from "../../prompts/integrationPrompts.js";
-import type { GraphData, Entity, Relationship } from "../../types/domain.js";
+import { entityResolutionPrompt } from "#prompts/integrationPrompts.js";
+import type { GraphData, Entity, Relationship } from "#types/domain.js";
 import * as fs from "fs/promises";
 import * as path from "path";
+import { DrizzleGraphStore } from "#storage/drizzleStore.js";
 
 /**
  * Phase 1: Integration Workflow - MVP

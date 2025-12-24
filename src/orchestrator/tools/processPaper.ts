@@ -1,13 +1,13 @@
 import { tool } from "llamaindex";
 import { z } from "zod";
-import { createEDCWorkflow } from "../../pipeline/workflow/edcWorkflow.js";
-import { createIntegrationWorkflow } from "../../pipeline/workflow/integrationWorkflow.js";
-import { loadEvent, completeEvent } from "../../pipeline/workflow/events.js";
+import { createEDCWorkflow } from "#pipeline/workflow/edcWorkflow.js";
+import { createIntegrationWorkflow } from "#pipeline/workflow/integrationWorkflow.js";
+import { loadEvent, completeEvent } from "#pipeline/workflow/events.js";
 import {
     integrateEvent,
     integrationCompleteEvent,
-} from "../../pipeline/workflow/integrationEvents.js";
-import type { GraphData, Entity, Relationship } from "../../types/domain.js";
+} from "#pipeline/workflow/integrationEvents.js";
+import type { GraphData, Entity, Relationship } from "#types/domain.js";
 
 // Add index signature to satisfy JSON compatibility if needed, though usually tool returns are flexible.
 // We make it explicit:

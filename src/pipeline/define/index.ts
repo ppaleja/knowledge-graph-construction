@@ -1,5 +1,6 @@
-import type { IDefiner, GraphData, Entity } from "../../types/domain.js";
-import { DEFINE_PROMPT } from "../../prompts/define.js";
+import type { GraphData, Entity } from "#types/domain.js";
+import type { IDefiner } from "#types/interfaces/pipeline.js";
+import { DEFINE_PROMPT } from "#prompts/define.js";
 import { Settings } from "llamaindex";
 
 export class Definer implements IDefiner {
