@@ -37,42 +37,33 @@ export class Extractor implements IExtractor {
     }
 
     private async extractEntities(text: string): Promise<Entity[]> {
-        try {
-            const fileBuffer = Buffer.from(text);
-            const extractedData = await this.llamaExtract.extract(
-                entitySchema,
-                {},
-                undefined,
-                fileBuffer,
-            );
+        const fileBuffer = Buffer.from(text);
+        const extractedData = await this.llamaExtract.extract(
+            entitySchema,
+            {},
+            undefined,
+            fileBuffer,
+        );
 
-            const resultItem = Array.isArray(extractedData)
-                ? extractedData[0]
-                : extractedData;
+        const resultItem = Array.isArray(extractedData)
+            ? extractedData[0]
+            : extractedData;
 
-            if (resultItem && "data" in resultItem) {
-                const data = resultItem.data as any;
-                return data.entities || [];
-            }
-
-            return [];
-        } catch (error) {
-            console.error(
-                `[${this.name}] Entity extraction failed:`,
-                (error as Error).message,
-            );
-            return [];
+        if (resultItem && "data" in resultItem) {
+            const data = resultItem.data as any;
+            return data.entities || [];
         }
+
+        return [];
     }
 
     private async extractRelationships(text: string, entities: Entity[]): Promise<Relationship[]> {
-        try {
-            // Format entity list as instruction context
-            const entityList = entities.map(e =>
-                `- ${e.id}: ${e.name} (${e.type})`
-            ).join('\n');
+        // Format entity list as instruction context
+        const entityList = entities.map(e =>
+            `- ${e.id}: ${e.name} (${e.type})`
+        ).join('\n');
 
-            const instructions = `You are extracting relationships between entities from an academic paper.
+        const instructions = `You are extracting relationships between entities from an academic paper.
 
 ENTITY LIST (use these exact IDs for sourceId and targetId):
 ${entityList}
@@ -89,50 +80,43 @@ RELATIONSHIP TYPES:
 
 CRITICAL: Use ONLY the exact entity IDs from the list above for sourceId and targetId.`;
 
-            // Use LlamaExtract with relationshipSchema
-            const fileBuffer = Buffer.from(text);
-            const extractedData = await this.llamaExtract.extract(
-                relationshipSchema,
-                { system_prompt: instructions },
-                undefined,
-                fileBuffer,
+        // Use LlamaExtract with relationshipSchema
+        const fileBuffer = Buffer.from(text);
+        const extractedData = await this.llamaExtract.extract(
+            relationshipSchema,
+            { system_prompt: instructions },
+            undefined,
+            fileBuffer,
+        );
+
+        const resultItem = Array.isArray(extractedData)
+            ? extractedData[0]
+            : extractedData;
+
+        if (resultItem && "data" in resultItem) {
+            const data = resultItem.data as any;
+            const relationships = data.relationships || [];
+
+            console.log(`[${this.name}] LlamaExtract returned ${relationships.length} relationships`);
+
+            // Validate entity IDs and filter invalid relationships
+            const entityIds = new Set(entities.map(e => e.id));
+            const validRelationships = relationships.filter((rel: Relationship) =>
+                entityIds.has(rel.sourceId) &&
+                entityIds.has(rel.targetId) &&
+                rel.sourceId !== rel.targetId
             );
 
-            const resultItem = Array.isArray(extractedData)
-                ? extractedData[0]
-                : extractedData;
-
-            if (resultItem && "data" in resultItem) {
-                const data = resultItem.data as any;
-                const relationships = data.relationships || [];
-
-                console.log(`[${this.name}] LlamaExtract returned ${relationships.length} relationships`);
-
-                // Validate entity IDs and filter invalid relationships
-                const entityIds = new Set(entities.map(e => e.id));
-                const validRelationships = relationships.filter((rel: Relationship) =>
-                    entityIds.has(rel.sourceId) &&
-                    entityIds.has(rel.targetId) &&
-                    rel.sourceId !== rel.targetId
+            const filteredCount = relationships.length - validRelationships.length;
+            if (filteredCount > 0) {
+                console.log(
+                    `[${this.name}] Filtered ${filteredCount} relationships with invalid entity IDs`
                 );
-
-                const filteredCount = relationships.length - validRelationships.length;
-                if (filteredCount > 0) {
-                    console.log(
-                        `[${this.name}] Filtered ${filteredCount} relationships with invalid entity IDs`
-                    );
-                }
-
-                return validRelationships;
             }
 
-            return [];
-        } catch (error) {
-            console.error(
-                `[${this.name}] Relationship extraction failed:`,
-                (error as Error).message,
-            );
-            return [];
+            return validRelationships;
         }
+
+        return [];
     }
 }
