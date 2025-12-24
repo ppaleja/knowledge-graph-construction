@@ -29,6 +29,7 @@ export class DrizzleGraphStore implements IGraphStore {
             // Use SERIALIZABLE isolation for strongest concurrency guarantees
             await db.transaction(async (tx) => {
                 // Set transaction isolation level to SERIALIZABLE
+                // This must be the first statement in the transaction
                 await tx.execute(sql`SET TRANSACTION ISOLATION LEVEL SERIALIZABLE`);
 
                 // Upsert Entities with optimistic concurrency control
@@ -39,7 +40,7 @@ export class DrizzleGraphStore implements IGraphStore {
                         type: entity.type,
                         description: entity.description,
                         metadata: entity.metadata,
-                        version: 1
+                        version: 1 // Initial version for new entities
                     }).onConflictDoUpdate({
                         target: entities.id,
                         set: {
@@ -48,6 +49,7 @@ export class DrizzleGraphStore implements IGraphStore {
                             description: entity.description,
                             metadata: entity.metadata,
                             // Increment version for optimistic concurrency control
+                            // Only updates when entity already exists (conflict)
                             version: sql`${entities.version} + 1`
                         }
                     });

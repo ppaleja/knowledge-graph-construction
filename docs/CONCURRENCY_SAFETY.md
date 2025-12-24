@@ -12,8 +12,18 @@ This document describes the concurrency control mechanisms implemented to ensure
 
 **Implementation:**
 ```typescript
-await tx.execute(sql`SET TRANSACTION ISOLATION LEVEL SERIALIZABLE`);
+await db.transaction(async (tx) => {
+  // IMPORTANT: This must be the first statement in the transaction
+  await tx.execute(sql`SET TRANSACTION ISOLATION LEVEL SERIALIZABLE`);
+  
+  // ... rest of transaction operations
+});
 ```
+
+**Why this works:**
+- PostgreSQL allows `SET TRANSACTION` as the first statement in a transaction block
+- The isolation level applies to all subsequent operations in that transaction
+- Drizzle's transaction wrapper ensures this executes before other operations
 
 **Benefits:**
 - Provides the strongest isolation level in PostgreSQL
@@ -35,10 +45,24 @@ await tx.execute(sql`SET TRANSACTION ISOLATION LEVEL SERIALIZABLE`);
 version: integer("version").notNull().default(1)
 ```
 
-**Update Logic:**
+**Insert/Update Logic:**
 ```typescript
-version: sql`${entities.version} + 1`
+// For new entities (INSERT)
+.values({ version: 1, ... })
+
+// For existing entities (UPDATE on conflict)
+.onConflictDoUpdate({
+  set: {
+    version: sql`${entities.version} + 1`,
+    ...
+  }
+})
 ```
+
+**How it works:**
+- When inserting a NEW entity: version starts at 1
+- When updating an EXISTING entity (conflict on id): version increments by 1
+- The `onConflictDoUpdate.set` clause only executes when there IS a conflict
 
 **Benefits:**
 - Detects concurrent modifications to the same entity
