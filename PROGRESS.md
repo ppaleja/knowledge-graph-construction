@@ -20,6 +20,7 @@ We have built a functional, event-driven backend system that successfully:
 | **End-to-End Pipeline** | ✅ **Done** | CLI tool processes PDFs -> DB. Includes duplicate resolution. |
 | **Documentation** | ✅ **Done** | `walkthrough.md` covers architecture. This file covers features. |
 | **Agentic Reasoning** | ✅ **Done** | Agents for Type Refinement ("The Architect") and Entity Resolution ("The Historian"). |
+| **Agentic Orchestration** | ✅ **Done** | **Central Controller** (ReACT Agent) managing the entire lifecycle. |
 | **Scalability Design** | ✅ **Done** | Event-driven architecture allows async/batch processing. |
 
 ---
@@ -57,6 +58,16 @@ A separate, decoupled workflow that merges new data into the master graph.
 *   **Database**: Postgres with `pgvector` extension enabled (ready for Phase 2).
 *   **ORM**: Drizzle ORM for type-safe database interactions.
 *   **CLI**: Simple command-line interface with flags (e.g., `--integrate`).
+
+### 4. Agentic Architecture (New!)
+Refactored the system into a **Central Controller** model using ReACT prompting.
+
+*   **Central Controller**: A "Knowledge GraphBuilder" agent that reasons about which papers to find and process.
+*   **Granular Tools**:
+    *   **Discovery**: `searchPapers` (OpenAlex), `getCitations` (OpenAlex), `downloadPaper`.
+    *   **Processing**: `processPaper` (Runs EDC + Integration pipeline on demand).
+    *   **Analysis**: `queryKnowledgeGraph`, `summarizeKnowledgeGraph`.
+*   **OpenAlex Integration**: Replaced Semantic Scholar with OpenAlex for better reliability and rate limits.
 
 ---
 
@@ -101,6 +112,12 @@ npm run build
 ```
 
 **Run (Extraction + Integration):**
+**Run (Legal/Standard Mode):**
 ```bash
 node dist/index.js data/papers/your-paper.pdf --integrate
+```
+
+**Run (Agentic Mode):**
+```bash
+node dist/index.js --agent "Build a KG on Gaussian Splatting with 5 papers"
 ```
