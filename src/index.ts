@@ -1,108 +1,110 @@
 import { initLLM } from "./utils/llm.js";
-import * as path from "path";
-import { createEDCWorkflow } from "./pipeline/workflow/edcWorkflow.js";
-import { loadEvent, completeEvent } from "./pipeline/workflow/events.js";
-import { createIntegrationWorkflow } from "./pipeline/workflow/integrationWorkflow.js";
-import {
-  integrateEvent,
-  integrationCompleteEvent,
-} from "./pipeline/workflow/integrationEvents.js";
-import type { GraphData } from "./types/domain.js";
+import { centralController } from "./orchestrator/index.js";
 
 async function main() {
   const args = process.argv.slice(2);
+
+  // Check if using agentic mode
+  const useAgent = args.includes("--agent");
+
+  if (useAgent) {
+    // NEW: Agentic mode using central controller
+    const taskDescription = args.find((arg) => !arg.startsWith("--")) ||
+      'Build a knowledge graph on Gaussian Splatting with 5 papers';
+
+    console.log("=== Agentic Knowledge Graph Builder ===");
+    console.log(`Task: ${taskDescription}\n`);
+
+    // Init LlamaIndex Settings
+    initLLM();
+
+    // Run the agent
+    const result = await centralController.run(taskDescription);
+
+    console.log("\n=== Agent Task Complete ===");
+    console.log(result.data.result);
+
+    // Close database connection
+    const { client } = await import("./storage/index.js");
+    await client.end();
+    return;
+  }
+
+  // LEGACY: Original workflow-based mode
   const paperPath = args.find((arg) => !arg.startsWith("--"));
   const shouldIntegrate = args.includes("--integrate");
 
   if (!paperPath) {
-    console.error("Usage: node dist/index.js <path-to-paper.pdf> [--integrate]");
-    console.error("  --integrate: Run integration workflow after extraction");
+    console.error("Usage:");
+    console.error("  NEW: node dist/index.js --agent [task description]");
+    console.error('  Example: node dist/index.js --agent "Build a KG on NeRF with 10 papers"');
+    console.error("");
+    console.error("  LEGACY: node dist/index.js <path-to-paper.pdf> [--integrate]");
     process.exit(1);
   }
 
-  // Init LlamaIndex Settings
+  // Legacy workflow code
+  const path = await import("path");
+  const { createEDCWorkflow } = await import("./pipeline/workflow/edcWorkflow.js");
+  const { loadEvent, completeEvent } = await import("./pipeline/workflow/events.js");
+  const { createIntegrationWorkflow } = await import("./pipeline/workflow/integrationWorkflow.js");
+  const {
+    integrateEvent,
+    integrationCompleteEvent,
+  } = await import("./pipeline/workflow/integrationEvents.js");
+
   initLLM();
 
-  // Create workflow instance
   const workflow = createEDCWorkflow();
-
-  // Create context and start pipeline
   const { stream, sendEvent } = workflow.createContext();
-
-  // Send initial event
   sendEvent(loadEvent.with({ paperPath: path.resolve(paperPath) }));
 
-  // Wait for EDC completion
-  let extractedGraph: GraphData | null = null;
+  let extractedGraph: any = null;
 
   for await (const event of stream) {
     if (completeEvent.include(event)) {
-      const { success, entitiesCount, relationshipsCount } = event.data;
+      const { success, entitiesCount, relationshipsCount, finalGraph } = event.data;
 
       if (success) {
         console.log("=== EDC Pipeline Complete ===");
         console.log(`✅ Extracted ${entitiesCount} entities`);
         console.log(`✅ Extracted ${relationshipsCount} relationships`);
 
-        // If integration is requested, trigger it
-        if (shouldIntegrate) {
+        if (shouldIntegrate && finalGraph) {
           console.log("\n=== Starting Integration Workflow ===");
 
-          // Load the extracted graph from debug output
-          const debugDir = path.resolve("debug");
-          const finalGraphPath = path.join(
-            debugDir,
-            "03_canonicalization.json",
+          const integrationWorkflow = createIntegrationWorkflow();
+          const {
+            stream: integrationStream,
+            sendEvent: sendIntegrationEvent,
+          } = integrationWorkflow.createContext();
+
+          sendIntegrationEvent(
+            integrateEvent.with({
+              newGraph: finalGraph,
+              paperPath: path.resolve(paperPath),
+            }),
           );
 
-          try {
-            const fs = await import("fs/promises");
-            const graphData = await fs.readFile(finalGraphPath, "utf-8");
-            extractedGraph = JSON.parse(graphData);
+          for await (const integrationEvent of integrationStream) {
+            if (integrationCompleteEvent.include(integrationEvent)) {
+              const {
+                success: integrationSuccess,
+                entitiesMerged,
+                entitiesCreated,
+              } = integrationEvent.data;
 
-            if (!extractedGraph) {
-              throw new Error("Failed to load extracted graph");
-            }
-
-            // Create integration workflow
-            const integrationWorkflow = createIntegrationWorkflow();
-            const {
-              stream: integrationStream,
-              sendEvent: sendIntegrationEvent,
-            } = integrationWorkflow.createContext();
-
-            // Send integration event
-            sendIntegrationEvent(
-              integrateEvent.with({
-                newGraph: extractedGraph,
-                paperPath: path.resolve(paperPath),
-              }),
-            );
-
-            // Wait for integration completion
-            for await (const integrationEvent of integrationStream) {
-              if (integrationCompleteEvent.include(integrationEvent)) {
-                const {
-                  success: integrationSuccess,
-                  entitiesMerged,
-                  entitiesCreated,
-                } = integrationEvent.data;
-
-                if (integrationSuccess) {
-                  console.log("\n=== Integration Complete ===");
-                  console.log(`✅ Merged ${entitiesMerged} entities`);
-                  console.log(`✅ Created ${entitiesCreated} new entities`);
-                } else {
-                  console.log("\n=== Integration Failed ===");
-                  process.exit(1);
-                }
-
-                break;
+              if (integrationSuccess) {
+                console.log("\n=== Integration Complete ===");
+                console.log(`✅ Merged ${entitiesMerged} entities`);
+                console.log(`✅ Created ${entitiesCreated} new entities`);
+              } else {
+                console.log("\n=== Integration Failed ===");
+                process.exit(1);
               }
+
+              break;
             }
-          } catch (error) {
-            console.error("Failed to run integration workflow:", error);
-            process.exit(1);
           }
         }
       } else {
@@ -114,7 +116,6 @@ async function main() {
     }
   }
 
-  // Close command reference explicitly
   const { client } = await import("./storage/index.js");
   await client.end();
 }
