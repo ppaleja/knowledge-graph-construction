@@ -60,7 +60,12 @@ export function createIntegrationWorkflow() {
                 `[Integration] Retrieved candidates for ${candidates.size} entities`,
             );
             sendEvent(
-                candidatesRetrievedEvent.with({ newGraph, candidates, paperPath }),
+                candidatesRetrievedEvent.with({
+                    newGraph,
+                    candidates,
+                    paperPath,
+                    ...(event.data.sourcePaperId && { sourcePaperId: event.data.sourcePaperId })
+                }),
             );
         } catch (error) {
             console.error(`[Integration] Error in retrieve step:`, error);
@@ -216,6 +221,7 @@ export function createIntegrationWorkflow() {
                     ...rel,
                     sourceId: idMapping.get(rel.sourceId) || rel.sourceId,
                     targetId: idMapping.get(rel.targetId) || rel.targetId,
+                    ...(event.data.sourcePaperId && { sourcePaperId: event.data.sourcePaperId }),
                 }),
             );
 

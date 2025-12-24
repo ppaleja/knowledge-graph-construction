@@ -25,7 +25,7 @@ Your mission is to process academic papers and construct a comprehensive knowled
 - downloadPaper: Download a paper's PDF
 
 **Processing:**
-- processPaper: Run full extraction + integration pipeline on a paper
+- processPaper: Run full extraction + integration pipeline on a paper (pass sourcePaperId for provenance)
 
 **Knowledge Graph Queries:**
 - queryKnowledgeGraph: Search for entities in the KG
@@ -56,7 +56,7 @@ User: "Build a KG on Gaussian Splatting with 10 papers"
 
 1. searchPapers({query: "Gaussian Splatting", limit: 10})
 2. For top result: downloadPaper({paperId: "...", title: "...", citationCount: ...})
-3. processPaper({paperPath: "..."})
+3. processPaper({paperPath: "...", sourcePaperId: "..."})
    - If success: continue.
    - If success=false && error="Quota": STOP/WARN.
    - If success=false: Log it and move to next paper.

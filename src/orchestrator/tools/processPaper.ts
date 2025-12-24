@@ -37,8 +37,12 @@ export const processPaperTool = tool({
         paperPath: z
             .string()
             .describe("Absolute path to the PDF paper to process"),
+        sourcePaperId: z
+            .string()
+            .optional()
+            .describe("OpenAlex Work ID (e.g., W12345678) for provenance tracking"),
     }),
-    execute: async ({ paperPath }): Promise<ProcessPaperResult> => {
+    execute: async ({ paperPath, sourcePaperId }): Promise<ProcessPaperResult> => {
         console.log(`
 [processPaper] Starting for: ${paperPath}`);
 
@@ -99,6 +103,7 @@ export const processPaperTool = tool({
                 integrateEvent.with({
                     newGraph: extractedGraph,
                     paperPath,
+                    ...(sourcePaperId && { sourcePaperId }),
                 })
             );
 

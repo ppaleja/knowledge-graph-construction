@@ -7,6 +7,7 @@ import type { GraphData, Entity } from "#types/domain.js";
 export const integrateEvent = workflowEvent<{
     newGraph: GraphData;
     paperPath: string;
+    sourcePaperId?: string;
 }>();
 
 /**
@@ -17,6 +18,7 @@ export const candidatesRetrievedEvent = workflowEvent<{
     newGraph: GraphData;
     candidates: Map<string, Entity[]>;
     paperPath: string;
+    sourcePaperId?: string;
 }>();
 
 /**
