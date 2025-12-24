@@ -49,6 +49,7 @@ export const integrationCompleteEvent = workflowEvent<{
     entitiesMerged: number;
     entitiesCreated: number;
     resolvedGraph?: GraphData; // Optional: contains the resolved graph for tool usage
+    error?: string;
 }>();
 
 /**

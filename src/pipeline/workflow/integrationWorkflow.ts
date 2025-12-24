@@ -316,6 +316,7 @@ export function createIntegrationWorkflow() {
                 entitiesProcessed: 0,
                 entitiesMerged: 0,
                 entitiesCreated: 0,
+                error,
             }),
         );
     });

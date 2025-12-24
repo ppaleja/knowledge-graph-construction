@@ -214,6 +214,7 @@ export function createEDCWorkflow() {
         entitiesCount: 0,
         relationshipsCount: 0,
         finalGraph: { entities: [], relationships: [] },
+        error,
       }),
     );
   });
