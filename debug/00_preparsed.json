@@ -1,0 +1,129 @@
+{
+  "title": "Mip-Splatting: Alias-free 3D Gaussian Splatting",
+  "authors": [
+    {
+      "name": "Zehao Yu",
+      "affiliation": "University of Tübingen; Tübingen AI Center",
+      "email": ""
+    },
+    {
+      "name": "Anpei Chen",
+      "affiliation": "University of Tübingen; Tübingen AI Center",
+      "email": ""
+    },
+    {
+      "name": "Binbin Huang",
+      "affiliation": "ShanghaiTech University",
+      "email": ""
+    },
+    {
+      "name": "Torsten Sattler",
+      "affiliation": "Czech Technical University in Prague",
+      "email": ""
+    },
+    {
+      "name": "Andreas Geiger",
+      "affiliation": "University of Tübingen; Tübingen AI Center",
+      "email": ""
+    }
+  ],
+  "abstract": "Recently, 3D Gaussian Splatting has demonstrated impressive novel view synthesis results, reaching high fidelity and efficiency. However, strong artifacts can be observed when changing the sampling rate, e.g., by changing focal length or camera distance. We find that the source for this phenomenon can be attributed to the lack of 3D frequency constraints and the usage of a 2D dilation filter. To address this problem, we introduce a 3D smoothing filter which constrains the size of the 3D Gaussian primitives based on the maximal sampling frequency induced by the input views, eliminating high-frequency artifacts when zooming in. Moreover, replacing 2D dilation with a 2D Mip filter, which simulates a 2D box filter, effectively mitigates aliasing and dilation issues. Our evaluation, including scenarios such a training on single-scale images and testing on multiple scales, validates the effectiveness of our approach.",
+  "keywords": null,
+  "mainFindings": [
+    "Proposes Mip-Splatting, introducing two new filters—a 3D smoothing filter and a 2D Mip filter—for alias-free, scale-robust 3D Gaussian Splatting rendering.",
+    "The 3D smoothing filter regularizes the maximum frequency of 3D Gaussian primitives, resolving artifacts in out-of-distribution renderings.",
+    "The 2D Mip filter approximates the box filter from physical image formation, mitigating aliasing and dilation artifacts and enabling alias-free rendering across scales.",
+    "Experiments on Blender and Mip-NeRF 360 datasets show that Mip-Splatting significantly outperforms prior methods (such as 3DGS and 3DGS+EWA) in both multi-scale testing and generalization to scales not seen during training."
+  ],
+  "methodology": {
+    "approach": "An extension of 3D Gaussian Splatting (3DGS) that incorporates two principled modifications: (1) a 3D smoothing filter applied during optimization to regularize the maximum frequency based on Nyquist limits of training data; (2) a 2D Mip filter during rendering to approximate the physical camera's integration over the pixel area, replacing screen-space dilation.",
+    "participants": "Synthetic benchmark datasets: Blender [28] and Mip-NeRF 360 [2]. Evaluation includes both multi-scale (single- and multi-scale) training and testing scenarios.",
+    "methods": [
+      "3D smoothing filter: computes multi-view frequency bounds per Gaussian using Nyquist-Shannon Sampling Theorem, applies a low-pass filter to each 3D primitive during optimization.",
+      "2D Mip filter: during rendering, replaces 2D dilation by a Gaussian-based approximation of a pixel-sized box filter for anti-aliasing.",
+      "Experiments: Training and evaluation performed on Blender and Mip-NeRF 360 datasets, using standard metrics (PSNR, SSIM, LPIPS) and comparison with state-of-the-art baselines (NeRF, 3DGS, Mip-NeRF, 3DGS+EWA, Tri-MipRF, etc.)."
+    ]
+  },
+  "results": [
+    {
+      "finding": "Mip-Splatting significantly surpasses 3DGS and 3DGS + EWA in rendering quality at lower/higher resolutions (not seen in training), yielding visually pleasing and artifact-free images across scales.",
+      "significance": "Addresses and practically solves artifact issues (dilation, aliasing, high-frequency artifacts) crucial for robust view synthesis across varying camera scales—an unsolved problem in previous 3DGS approaches.",
+      "supportingData": "Table 2 (Blender): Mip-Splatting SSIM↑ Avg.=0.974, PSNR↑ Avg.=31.97, LPIPS↓ Avg.=0.019, consistently outperforming 3DGS and 3DGS+EWA at non-training scales. Table 3 (Mip-NeRF 360): Mip-Splatting achieves higher SSIM/PSNR and lower LPIPS than other baselines at out-of-training-resolution evaluations."
+    },
+    {
+      "finding": "3D smoothing filter eliminates high-frequency artifacts (especially for zoom-in cases) by constraining the maximum frequency of primitives to Nyquist rates of training data.",
+      "significance": "Critical for generalization and artifact-free reconstruction under higher resolution views (zoom-in).",
+      "supportingData": "Ablation Table 5: Removing 3D smoothing filter results in increased high-frequency artifacts and reduced scores when evaluating at higher resolutions."
+    },
+    {
+      "finding": "2D Mip filter resolves aliasing and dilation artifacts (especially for zoom-out effects), critical for rendering at lower resolutions than training.",
+      "significance": "Essential for anti-aliasing and artifact-free rendering when sampling rate decreases (zoom-out).",
+      "supportingData": "Ablation Table 6: Removing 2D Mip filter shows marked decline in metrics at lower resolutions (simulated zoom-out)."
+    },
+    {
+      "finding": "Method performs on par with state-of-the-art at training scale, but significantly outperforms all compared methods in out-of-distribution (multi-scale) generalization settings.",
+      "significance": "Shows superior ability to generalize novel camera distances/scales with principled filtering, unlike prior MLP or grid-based approaches.",
+      "supportingData": "Summary Tables 2, 3, 8, 9, 11: Mip-Splatting achieves highest or competitive PSNR/SSIM and lowest LPIPS across scenes and scales."
+    }
+  ],
+  "discussion": {
+    "implications": [
+      "Enables practical, artifact-free real-time novel view synthesis with Gaussian primitives at arbitrary scales/focal lengths, an important step for deployment in graphics/vision applications such as VR, robotics, and cinematography.",
+      "Demonstrates that careful frequency-domain analysis and physical model-inspired filtering enable better generalization and rendering quality than previous neural field approaches."
+    ],
+    "limitations": [
+      "Gaussian filter is an approximation to the physical box filter—some errors persist, especially at large zoom-out (i.e., when Gaussian is small in screen-space).",
+      "Slightly increased training overhead from recomputing sampling rates per Gaussian; current implementation (PyTorch) could be optimized with CUDA.",
+      "Additional memory consumption due to maintaining multi-scale statistics, and additional overhead during rendering."
+    ],
+    "futureWork": [
+      "Designing better data structures or precomputing/storing Gaussian sampling rates to improve training efficiency.",
+      "Developing more accurate or physically-plausible filters than Gaussian approximations for high-fidelity rendering.",
+      "Extending the method to additional tasks/applications beyond synthetic datasets."
+    ]
+  },
+  "references": [
+    {
+      "title": "Mip-NeRF: A multiscale representation for anti-aliasing neural radiance fields",
+      "authors": "Jonathan T. Barron, Ben Mildenhall, Matthew Tancik, Peter Hedman, Ricardo Martin-Brualla, Pratul P. Srinivasan",
+      "year": "2021",
+      "relevance": "Proposed mip-NeRF, a neural radiance field method with integrated position encoding for anti-aliasing—serves as a state-of-the-art baseline and inspired the authors' 2D mip-filter."
+    },
+    {
+      "title": "Mip-NeRF 360: Unbounded anti-aliased neural radiance fields",
+      "authors": "Jonathan T. Barron, Ben Mildenhall, Dor Verbin, Pratul P. Srinivasan, Peter Hedman",
+      "year": "2022",
+      "relevance": "Provides a challenging testbed/data for evaluating generalization to unbounded scales, used extensively in the experiments."
+    },
+    {
+      "title": "3D Gaussian Splatting Radiance Field Rendering",
+      "authors": "Bernhard Kerbl, Georgios Kopanas, Thomas Leimkühler, George Drettakis",
+      "year": "2023",
+      "relevance": "Original 3DGS method, which the present work extends and improves upon."
+    },
+    {
+      "title": "EWA splatting",
+      "authors": "Matthias Zwicker, Hanspeter Pfister, Jeroen Van Baar, Markus Gross",
+      "year": "2001",
+      "relevance": "A baseline filter for anti-aliasing in splatting, compared to the new 2D mip-filter."
+    },
+    {
+      "title": "Tri-MipRF: Tri-mip representation for efficient anti-aliasing neural radiance fields",
+      "authors": "Wenbo Hu, Yuling Wang, Lin Ma, Bangbang Yang, Lin Gao, Xiao Liu, Yuewen Ma",
+      "year": "2023",
+      "relevance": "An alternative state-of-the-art method for anti-aliasing NVS, used as a baseline in comparisons."
+    },
+    {
+      "title": "Tensorf: Tensorial radiance fields",
+      "authors": "Anpei Chen, Zexiang Xu, Andreas Geiger, Jingyi Yu, and Hao Su",
+      "year": "2022",
+      "relevance": "A feature grid-based neural field method used for comparison/baseline."
+    }
+  ],
+  "publication": {
+    "journal": "arXiv",
+    "year": "2023",
+    "doi": null,
+    "url": "https://niujinshuchong.github.io/mip-splatting"
+  }
+}

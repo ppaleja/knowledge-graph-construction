@@ -1,345 +1,377 @@
 {
   "entities": [
     {
-      "id": "Agentic System",
-      "name": "Agentic System",
+      "id": "mip-splatting",
+      "name": "Mip-Splatting",
       "type": "Method",
-      "description": ""
+      "description": "An alias-free 3D Gaussian Splatting method introducing a 3D smoothing filter and a 2D Mip filter for novel view synthesis with improved scale robustness and anti-aliasing.",
+      "aliases": [
+        "Mip-Splatting (ours)"
+      ],
+      "metadata": null
     },
     {
-      "id": "Postgres",
-      "name": "Postgres",
-      "type": "Method",
-      "description": ""
-    },
-    {
-      "id": "Supabase",
-      "name": "Supabase",
-      "type": "Method",
-      "description": ""
-    },
-    {
-      "id": "Facebook's TAO",
-      "name": "Facebook's TAO",
-      "type": "Method",
-      "description": ""
-    },
-    {
-      "id": "3D Gaussian Splatting",
+      "id": "3dgs",
       "name": "3D Gaussian Splatting",
       "type": "Method",
-      "description": ""
+      "description": "A method that represents scenes as a set of 3D Gaussian primitives rendered through splatting and 2D dilation for novel view synthesis.",
+      "aliases": [
+        "3DGS"
+      ],
+      "metadata": null
     },
     {
-      "id": "Knowledge Graph Construction",
-      "name": "Knowledge Graph Construction",
+      "id": "3dgs-ewa",
+      "name": "3DGS + EWA",
+      "type": "Method",
+      "description": "3D Gaussian Splatting with an Elliptical Weighted Average (EWA) filter replacing the dilation step to mitigate aliasing.",
+      "aliases": [
+        "3DGS + EWA",
+        "EWA splatting"
+      ],
+      "metadata": null
+    },
+    {
+      "id": "mip-nerf",
+      "name": "Mip-NeRF",
+      "type": "Method",
+      "description": "A multiscale representation for anti-aliasing neural radiance fields, using integrated position encoding for anti-aliasing.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "mip-nerf-360",
+      "name": "Mip-NeRF 360",
+      "type": "Method",
+      "description": "An unbounded anti-aliased neural radiance field method designed for 360-degree novel view synthesis, based on anti-aliasing and multi-scale learning.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "zip-nerf",
+      "name": "Zip-NeRF",
+      "type": "Method",
+      "description": "An anti-aliased grid-based neural radiance field method that improves quality and generalization using multi-scale feature grids.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "tri-miprf",
+      "name": "Tri-MipRF",
+      "type": "Method",
+      "description": "Tri-mip representation for efficient anti-aliasing neural radiance fields, designed for scale robustness and anti-aliasing.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "nerf",
+      "name": "Neural Radiance Field (NeRF)",
+      "type": "Method",
+      "description": "A method that represents 3D scenes using a neural field and volume rendering for novel view synthesis.",
+      "aliases": [
+        "NeRF"
+      ],
+      "metadata": null
+    },
+    {
+      "id": "plenoxels",
+      "name": "Plenoxels",
+      "type": "Method",
+      "description": "Radiance field representation without neural networks for fast training and rendering.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "tensorrf",
+      "name": "TensoRF",
+      "type": "Method",
+      "description": "Tensorial radiance fields using tensor decomposition for efficient representation and rendering.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "instant-ngp",
+      "name": "Instant-NGP",
+      "type": "Method",
+      "description": "Instant neural graphics primitives, uses multiresolution hash encoding for efficient training and rendering of neural fields.",
+      "aliases": [
+        "Instant NGP"
+      ],
+      "metadata": null
+    },
+    {
+      "id": "ssim",
+      "name": "SSIM",
+      "type": "Metric",
+      "description": "Structural Similarity Index Metric, measures similarity between two images.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "psnr",
+      "name": "PSNR",
+      "type": "Metric",
+      "description": "Peak Signal-to-Noise Ratio, measures fidelity between images by quantifying the error.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "lpips",
+      "name": "LPIPS",
+      "type": "Metric",
+      "description": "Learned Perceptual Image Patch Similarity, measures perceptual similarity between images using deep features.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "blender-dataset",
+      "name": "Blender Dataset",
+      "type": "Dataset",
+      "description": "A synthetic dataset commonly used for benchmarking neural rendering methods, containing 3D scenes for novel view synthesis tasks.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "mip-nerf-360-dataset",
+      "name": "Mip-NeRF 360 Dataset",
+      "type": "Dataset",
+      "description": "A dataset of real-world 360-degree scenes used for evaluating novel view synthesis methods, with images captured from varying poses and scales.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "novel-view-synthesis",
+      "name": "Novel View Synthesis",
       "type": "Task",
-      "description": ""
+      "description": "The task of synthesizing novel images of a scene from viewpoints different than those seen during training/capture.",
+      "aliases": [
+        "NVS"
+      ],
+      "metadata": null
     },
     {
-      "id": "Reading Research Papers",
-      "name": "Reading Research Papers",
-      "type": "Task",
-      "description": ""
+      "id": "3d-smoothing-filter",
+      "name": "3D smoothing filter",
+      "type": "Method",
+      "description": "A filter that regularizes the maximum frequency of 3D Gaussian primitives based on the Nyquist-Shannon Sampling Theorem, applied during scene optimization to eliminate high-frequency artifacts.",
+      "aliases": [
+        "3D smoothing filter for 3DGS"
+      ],
+      "metadata": null
     },
     {
-      "id": "Extracting Key Concepts and Entities",
-      "name": "Extracting Key Concepts and Entities",
-      "type": "Task",
-      "description": ""
+      "id": "2d-mip-filter",
+      "name": "2D Mip filter",
+      "type": "Method",
+      "description": "A Gaussian-based filter that approximates a box filter for pixel-sized anti-aliasing in screen space, used during rendering to enable alias-free reconstruction across scales.",
+      "aliases": [
+        "2D Mip filter for 3DGS"
+      ],
+      "metadata": null
     },
     {
-      "id": "Connecting Concepts Across Papers",
-      "name": "Connecting Concepts Across Papers",
-      "type": "Task",
-      "description": ""
+      "id": "ewa-filter",
+      "name": "Elliptical Weighted Average (EWA) filter",
+      "type": "Method",
+      "description": "A Gaussian low-pass filter applied to projected 2D Gaussians in splatting for band-limited output, used for antialiasing in rendering tasks.",
+      "aliases": [
+        "EWA splatting"
+      ],
+      "metadata": null
     },
     {
-      "id": "Semantic Search",
-      "name": "Semantic Search",
-      "type": "Task",
-      "description": ""
-    },
-    {
-      "id": "Literature Mapping",
-      "name": "Literature Mapping",
-      "type": "Task",
-      "description": ""
-    },
-    {
-      "id": "Novelty Discovery",
-      "name": "Novelty Discovery",
-      "type": "Task",
-      "description": ""
-    },
-    {
-      "id": "3D Reconstruction",
-      "name": "3D Reconstruction",
-      "type": "Task",
-      "description": ""
-    },
-    {
-      "id": "Real-Time Radiance Field Rendering",
-      "name": "Real-Time Radiance Field Rendering",
-      "type": "Task",
-      "description": ""
-    },
-    {
-      "id": "Semantic Queries",
-      "name": "Semantic Queries",
-      "type": "Task",
-      "description": ""
-    },
-    {
-      "id": "Trend Analysis",
-      "name": "Trend Analysis",
-      "type": "Task",
-      "description": ""
-    },
-    {
-      "id": "Take Home Assignment",
-      "name": "Take Home Assignment",
+      "id": "nyquist-shannon-sampling-theorem",
+      "name": "Nyquist-Shannon Sampling Theorem",
       "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Knowledge Graph",
-      "name": "Knowledge Graph",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Semantic Relationships",
-      "name": "Semantic Relationships",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "System Design Thinking",
-      "name": "System Design Thinking",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Agentic Reasoning",
-      "name": "Agentic Reasoning",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Solid Engineering",
-      "name": "Solid Engineering",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Scalability",
-      "name": "Scalability",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Fault Tolerance",
-      "name": "Fault Tolerance",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Consistency",
-      "name": "Consistency",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Performance",
-      "name": "Performance",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Gaussian Splatting",
-      "name": "Gaussian Splatting",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Computer Graphics",
-      "name": "Computer Graphics",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Radiance Field Rendering",
-      "name": "Radiance Field Rendering",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "SQL Schema",
-      "name": "SQL Schema",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "System Architecture",
-      "name": "System Architecture",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Data Flow Diagrams",
-      "name": "Data Flow Diagrams",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Agent Logic",
-      "name": "Agent Logic",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Graph Database",
-      "name": "Graph Database",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Paper (node type)",
-      "name": "Paper (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Concept (node type)",
-      "name": "Concept (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Author (node type)",
-      "name": "Author (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Method (node type)",
-      "name": "Method (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Dataset (node type)",
-      "name": "Dataset (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Metric (node type)",
-      "name": "Metric (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Introduces (edge type)",
-      "name": "Introduces (edge type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Improves_on (edge type)",
-      "name": "Improves_on (edge type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Evaluates (edge type)",
-      "name": "Evaluates (edge type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Extends (edge type)",
-      "name": "Extends (edge type)",
-      "type": "Concept",
-      "description": ""
+      "description": "A fundamental theorem in signal processing dictating the minimal sampling rate for accurate signal reconstruction and avoidance of aliasing.",
+      "aliases": null,
+      "metadata": null
     }
   ],
   "relationships": [
     {
-      "sourceId": "Take Home Assignment",
-      "targetId": "Agentic System",
-      "type": "proposes"
+      "sourceId": "mip-splatting",
+      "targetId": "3dgs",
+      "type": "improves_on",
+      "description": "Mip-Splatting improves upon 3D Gaussian Splatting, particularly for generalization to out-of-distribution sampling rates and mitigating artifacts (aliasing, dilation, high-frequency artifacts) in novel view synthesis.",
+      "confidence": 0.99,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Postgres",
-      "type": "uses"
+      "sourceId": "mip-splatting",
+      "targetId": "3d-smoothing-filter",
+      "type": "uses",
+      "description": "Mip-Splatting uses a 3D smoothing filter to regularize the frequency of 3D Gaussian primitives, eliminating high-frequency artifacts when zooming in.",
+      "confidence": 0.99,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Supabase",
-      "type": "uses"
+      "sourceId": "mip-splatting",
+      "targetId": "2d-mip-filter",
+      "type": "uses",
+      "description": "Mip-Splatting uses a 2D Mip filter as a replacement for 2D dilation, providing anti-aliasing and mitigating dilation/aliasing issues during novel view synthesis, especially for zoom-out.",
+      "confidence": 0.99,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Agentic Reasoning",
-      "type": "uses"
+      "sourceId": "mip-splatting",
+      "targetId": "novel-view-synthesis",
+      "type": "addresses",
+      "description": "Mip-Splatting addresses the task of novel view synthesis by rendering images from new viewpoints with minimized artifacts.",
+      "confidence": 0.99,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "System Design Thinking",
-      "type": "uses"
+      "sourceId": "3d-smoothing-filter",
+      "targetId": "nyquist-shannon-sampling-theorem",
+      "type": "based_on",
+      "description": "The 3D smoothing filter is based on the Nyquist-Shannon Sampling Theorem, applying frequency constraints derived from input view sampling rates.",
+      "confidence": 0.98,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Knowledge Graph Construction",
-      "type": "achieves"
+      "sourceId": "mip-splatting",
+      "targetId": "3dgs-ewa",
+      "type": "improves_on",
+      "description": "Mip-Splatting improves upon 3DGS + EWA, showing better generalization, fewer artifacts, and superior metric scores when varying camera zoom or scale.",
+      "confidence": 0.95,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Reading Research Papers",
-      "type": "achieves"
+      "sourceId": "3dgs-ewa",
+      "targetId": "3dgs",
+      "type": "improves_on",
+      "description": "3DGS + EWA improves on vanilla 3DGS by reducing certain artifacts via elliptical weighted averaging, though it can yield over-smoothed results at some scales.",
+      "confidence": 0.95,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Extracting Key Concepts and Entities",
-      "type": "achieves"
+      "sourceId": "mip-splatting",
+      "targetId": "blender-dataset",
+      "type": "evaluated_on",
+      "description": "Mip-Splatting is evaluated on the Blender Dataset for both multi-scale and single-scale training/testing protocols.",
+      "confidence": 0.99,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Connecting Concepts Across Papers",
-      "type": "achieves"
+      "sourceId": "mip-splatting",
+      "targetId": "mip-nerf-360-dataset",
+      "type": "evaluated_on",
+      "description": "Mip-Splatting is evaluated on the Mip-NeRF 360 Dataset in single-scale and multi-scale settings.",
+      "confidence": 0.99,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Semantic Search",
-      "type": "achieves"
+      "sourceId": "mip-splatting",
+      "targetId": "psnr",
+      "type": "achieves",
+      "description": "Mip-Splatting achieves state-of-the-art or superior PSNR metrics compared to baseline and previous methods, especially at out-of-distribution scales.",
+      "confidence": 0.98,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Literature Mapping",
-      "type": "achieves"
+      "sourceId": "mip-splatting",
+      "targetId": "ssim",
+      "type": "achieves",
+      "description": "Mip-Splatting achieves high SSIM scores on evaluated datasets, outperforming prior approaches at various resolutions/scales.",
+      "confidence": 0.98,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Novelty Discovery",
-      "type": "achieves"
+      "sourceId": "mip-splatting",
+      "targetId": "lpips",
+      "type": "achieves",
+      "description": "Mip-Splatting achieves lower (better) LPIPS values, indicating more perceptually accurate reconstructions vs previous methods.",
+      "confidence": 0.98,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Semantic Queries",
-      "type": "achieves"
+      "sourceId": "mip-splatting",
+      "targetId": "3dgs",
+      "type": "based_on",
+      "description": "Mip-Splatting is based on 3D Gaussian Splatting, with modifications to filters for improved aliasing and generalization.",
+      "confidence": 0.99,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Trend Analysis",
-      "type": "achieves"
+      "sourceId": "3dgs-ewa",
+      "targetId": "3dgs",
+      "type": "based_on",
+      "description": "3DGS + EWA is based on 3DGS, replacing the 2D dilation step with an EWA filter for improved anti-aliasing.",
+      "confidence": 0.95,
+      "metadata": null
     },
     {
-      "sourceId": "3D Gaussian Splatting",
-      "targetId": "Real-Time Radiance Field Rendering",
-      "type": "achieves"
+      "sourceId": "ewa-filter",
+      "targetId": "2d-mip-filter",
+      "type": "related_to",
+      "description": "EWA filter and 2D Mip filter are both approaches for anti-aliasing/filtering in projected space but use different principles (empirical vs pixel-based).",
+      "confidence": 0.8,
+      "metadata": null
+    },
+    {
+      "sourceId": "mip-splatting",
+      "targetId": "nerf",
+      "type": "improves_on",
+      "description": "Mip-Splatting outperforms NeRF in multi-scale synthesis settings, especially for generalization to new sampling rates/resolutions.",
+      "confidence": 0.91,
+      "metadata": null
+    },
+    {
+      "sourceId": "mip-splatting",
+      "targetId": "mip-nerf",
+      "type": "improves_on",
+      "description": "Mip-Splatting surpasses Mip-NeRF in generalization and novel view synthesis quality at unseen resolutions/scales.",
+      "confidence": 0.91,
+      "metadata": null
+    },
+    {
+      "sourceId": "mip-splatting",
+      "targetId": "mip-nerf-360",
+      "type": "improves_on",
+      "description": "Mip-Splatting surpasses Mip-NeRF 360 in synthesizing high-resolution and multi-scale novel views, especially for out-of-distribution samples.",
+      "confidence": 0.9,
+      "metadata": null
+    },
+    {
+      "sourceId": "mip-splatting",
+      "targetId": "zip-nerf",
+      "type": "improves_on",
+      "description": "Mip-Splatting yields better results than Zip-NeRF in single-scale training/multi-scale testing settings on Mip-NeRF 360 dataset.",
+      "confidence": 0.85,
+      "metadata": null
+    },
+    {
+      "sourceId": "mip-splatting",
+      "targetId": "tri-miprf",
+      "type": "improves_on",
+      "description": "Mip-Splatting outperforms Tri-MipRF according to multi-scale experiments in the benchmark tables.",
+      "confidence": 0.85,
+      "metadata": null
+    },
+    {
+      "sourceId": "mip-splatting",
+      "targetId": "tensorrf",
+      "type": "improves_on",
+      "description": "Mip-Splatting outperforms TensoRF on multi-scale novel view synthesis metrics.",
+      "confidence": 0.85,
+      "metadata": null
+    },
+    {
+      "sourceId": "mip-splatting",
+      "targetId": "instant-ngp",
+      "type": "improves_on",
+      "description": "Mip-Splatting outperforms Instant-NGP on multi-scale and out-of-distribution synthesis benchmarks.",
+      "confidence": 0.85,
+      "metadata": null
+    },
+    {
+      "sourceId": "mip-splatting",
+      "targetId": "plenoxels",
+      "type": "improves_on",
+      "description": "Mip-Splatting outperforms Plenoxels in multi-scale generalization and novel view synthesis metrics.",
+      "confidence": 0.85,
+      "metadata": null
     }
   ]
 }

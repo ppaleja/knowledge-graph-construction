@@ -55,7 +55,7 @@ A separate, decoupled workflow that merges new data into the master graph.
     *   Handles connection lifecycle to prevent leaks.
 
 ### 3. Infrastructure & Tooling
-*   **Database**: Postgres with `pgvector` extension enabled (ready for Phase 2).
+*   **Database**: Postgres with `pgvector` extension enabled. HNSW Index on `embedding` column for fast similarity search.
 *   **ORM**: Drizzle ORM for type-safe database interactions.
 *   **CLI**: Simple command-line interface with flags (e.g., `--integrate`).
 
@@ -75,14 +75,13 @@ Refactored the system into a **Central Controller** model using ReACT prompting.
 
 We have successfully tested the pipeline on two distinct inputs:
 
-1.  **`Take Home Assignment.pdf`** (Self-Test)
-    *   *Result*: Extracted 9 entities (Concepts like "Knowledge Graph", "Semantic Relationships").
-    *   *Integration*: Merged "Gaussian Splatting" concepts successfully.
-    
-2.  **`guassian-splatting.pdf`** (Target Domain)
-    *   *Result*: Extracted 27 entities and 33 relationships.
-    *   *Key Entities*: "3D Gaussian Splatting", "NeRF", "SSIM", "LPIPS".
-    *   *Integration*: Successfully created a rich initial graph.
+78: 1.  **`Take Home Assignment.pdf`** (Self-Test)
+79:     *   *Result*: Extracted 25 entities (Concepts like "VolSDF", "Neuralangelo").
+80:     *   *Integration*: Merged "3D Gaussian Splatting" successfully.
+81:     
+82: 2.  **`2d_gaussian_splatting...pdf`** (Target Domain)
+83:     *   *Result*: Extracted 25 entities and 35 relationships.
+84:     *   *Integration*: 5 merges, 20 creations. Correctly linked "NeuSG" -> "neus".
 
 ---
 
@@ -90,9 +89,7 @@ We have successfully tested the pipeline on two distinct inputs:
 
 While the MVP works, the following would be the immediate next steps for a production system:
 
-93: 1.  **Schema Alignment Agent**
-94:     *   *Current*: LLM tries to adhere to prompt instructions.
-95:     *   *Upgrade*: A dedicated agent to enforce a strict Ontology (e.g., ensure all "3D Methods" map to `class: Method` property `subclass: 3D`).
+
 
 2.  **Schema Alignment Agent**
     *   *Current*: LLM tries to adhere to prompt instructions.

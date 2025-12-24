@@ -1,345 +1,635 @@
 {
   "entities": [
     {
-      "id": "Agentic System",
-      "name": "Agentic System",
-      "type": "Method",
-      "description": ""
-    },
-    {
-      "id": "Postgres",
-      "name": "Postgres",
-      "type": "Method",
-      "description": ""
-    },
-    {
-      "id": "Supabase",
-      "name": "Supabase",
-      "type": "Method",
-      "description": ""
-    },
-    {
-      "id": "Facebook's TAO",
-      "name": "Facebook's TAO",
-      "type": "Method",
-      "description": ""
-    },
-    {
-      "id": "3D Gaussian Splatting",
+      "id": "3dgs",
       "name": "3D Gaussian Splatting",
       "type": "Method",
-      "description": ""
+      "description": "A scene representation that models 3D scenes using a set of anisotropic Gaussian primitives, enabling differentiable rasterisation and efficient rendering, used here as the main representation in SLAM.",
+      "aliases": [
+        "3DGS",
+        "Gaussian Splatting"
+      ],
+      "metadata": null
     },
     {
-      "id": "Knowledge Graph Construction",
-      "name": "Knowledge Graph Construction",
+      "id": "slam",
+      "name": "Simultaneous Localization and Mapping (SLAM)",
       "type": "Task",
-      "description": ""
+      "description": "Task in robotics and computer vision where an agent simultaneously constructs a map of an unknown environment and estimates its own position within it.",
+      "aliases": [
+        "SLAM"
+      ],
+      "metadata": null
     },
     {
-      "id": "Reading Research Papers",
-      "name": "Reading Research Papers",
+      "id": "monocular_slam",
+      "name": "Monocular SLAM",
       "type": "Task",
-      "description": ""
+      "description": "SLAM using only a monocular camera as input, regarded as a difficult and fundamental setting.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Extracting Key Concepts and Entities",
-      "name": "Extracting Key Concepts and Entities",
+      "id": "rgbd_slam",
+      "name": "RGB-D SLAM",
       "type": "Task",
-      "description": ""
+      "description": "SLAM leveraging both RGB images and depth input from an external depth sensor.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Connecting Concepts Across Papers",
-      "name": "Connecting Concepts Across Papers",
+      "id": "direct_camera_tracking",
+      "name": "Direct Camera Tracking",
+      "type": "Method",
+      "description": "Camera pose estimation by directly optimising photometric and (if available) geometric residuals with explicit analytic Jacobian, without deep priors or pre-trained modules.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "differentiable_rasterisation",
+      "name": "Differentiable Rasterisation",
+      "type": "Concept",
+      "description": "Rendering technique allowing gradients to propagate through the rendering process, essential for direct optimisation in 3DGS-based SLAM.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "analytic_jacobian_lie_group",
+      "name": "Analytic Jacobian on Lie Group for Camera Pose Estimation",
+      "type": "Method",
+      "description": "A method to compute an explicit, minimal analytic Jacobian of camera pose w.r.t. 3D Gaussian map, utilising Lie algebra (SE(3)/se(3)) for efficient pose optimisation.",
+      "aliases": [
+        "Analytic Jacobian"
+      ],
+      "metadata": null
+    },
+    {
+      "id": "isotropic_regularisation",
+      "name": "Isotropic Regularisation",
+      "type": "Concept",
+      "description": "A regularisation term encouraging 3D Gaussians to be more spherical, preventing elongated artefacts and ensuring geometrical consistency in mappings.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "geometric_verification",
+      "name": "Geometric Verification",
+      "type": "Method",
+      "description": "Verifies and regularises geometry in incremental reconstruction to handle ambiguities, assisting stable mapping.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "gaussian_pruning",
+      "name": "Efficient Gaussian Pruning",
+      "type": "Method",
+      "description": "Method to prune unstable or unobserved Gaussians based on geometric stability to maintain efficient, clean map representation.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "keyframe_selection_gaussian_covisibility",
+      "name": "Keyframe Selection based on Gaussian Covisibility and Overlap",
+      "type": "Method",
+      "description": "Selecting SLAM keyframes based on the intersection/overlap of visible 3D Gaussians rather than features or image overlap; ensures good multiview constraints.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "photometric_loss",
+      "name": "Photometric Loss",
+      "type": "Metric",
+      "description": "Loss function based on pixel differences between rendered and observed images, used for camera and map optimisation in SLAM.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "geometric_loss",
+      "name": "Geometric Loss",
+      "type": "Metric",
+      "description": "Loss function based on differences in depth/range, used jointly with photometric loss when depth is available.",
+      "aliases": null,
+      "metadata": null
+    },
+    {
+      "id": "novel_view_synthesis",
+      "name": "Novel View Synthesis",
       "type": "Task",
-      "description": ""
+      "description": "Synthesizing images of a scene from unseen viewpoints, commonly used to evaluate new representations like 3DGS.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Semantic Search",
-      "name": "Semantic Search",
-      "type": "Task",
-      "description": ""
+      "id": "ate_rmse",
+      "name": "Absolute Trajectory Error (ATE) RMSE",
+      "type": "Metric",
+      "description": "Average root mean square error between estimated and ground truth camera trajectories, primary accuracy metric for SLAM tracking.",
+      "aliases": [
+        "ATE RMSE"
+      ],
+      "metadata": null
     },
     {
-      "id": "Literature Mapping",
-      "name": "Literature Mapping",
-      "type": "Task",
-      "description": ""
+      "id": "psnr",
+      "name": "Peak Signal-to-Noise Ratio (PSNR)",
+      "type": "Metric",
+      "description": "A photometric quality metric to evaluate rendered image quality against reference images (higher is better).",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Novelty Discovery",
-      "name": "Novelty Discovery",
-      "type": "Task",
-      "description": ""
+      "id": "ssim",
+      "name": "Structural Similarity Index Measure (SSIM)",
+      "type": "Metric",
+      "description": "A photometric quality metric for image similarity (higher is better).",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "3D Reconstruction",
-      "name": "3D Reconstruction",
-      "type": "Task",
-      "description": ""
+      "id": "lpips",
+      "name": "Learned Perceptual Image Patch Similarity (LPIPS)",
+      "type": "Metric",
+      "description": "A perceptual deep feature-based metric for image similarity (lower is better).",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Real-Time Radiance Field Rendering",
-      "name": "Real-Time Radiance Field Rendering",
-      "type": "Task",
-      "description": ""
+      "id": "replica_dataset",
+      "name": "Replica Dataset",
+      "type": "Dataset",
+      "description": "A synthetic dataset of indoor scenes, commonly used for evaluating SLAM and novel view synthesis methods.",
+      "aliases": [
+        "Replica"
+      ],
+      "metadata": null
     },
     {
-      "id": "Semantic Queries",
-      "name": "Semantic Queries",
-      "type": "Task",
-      "description": ""
+      "id": "tum_rgbd_dataset",
+      "name": "TUM RGB-D Dataset",
+      "type": "Dataset",
+      "description": "A standard benchmark RGB-D dataset for evaluating camera tracking and SLAM.",
+      "aliases": [
+        "TUM dataset"
+      ],
+      "metadata": null
     },
     {
-      "id": "Trend Analysis",
-      "name": "Trend Analysis",
-      "type": "Task",
-      "description": ""
+      "id": "adam_optimizer",
+      "name": "Adam Optimizer",
+      "type": "Method",
+      "description": "An adaptive stochastic optimization algorithm used to optimise camera poses and Gaussian parameters.",
+      "aliases": [
+        "Adam"
+      ],
+      "metadata": null
     },
     {
-      "id": "Take Home Assignment",
-      "name": "Take Home Assignment",
+      "id": "spherical_harmonics",
+      "name": "Spherical Harmonics (SH)",
       "type": "Concept",
-      "description": ""
+      "description": "A function basis for modeling view-dependent radiance in 3DGS; ablated or omitted for most experiments in this work.",
+      "aliases": [
+        "SH"
+      ],
+      "metadata": null
     },
     {
-      "id": "Knowledge Graph",
-      "name": "Knowledge Graph",
-      "type": "Concept",
-      "description": ""
+      "id": "dso",
+      "name": "Direct Sparse Odometry (DSO)",
+      "type": "Method",
+      "description": "A classical direct visual odometry method evaluated as a baseline for monocular SLAM methods.",
+      "aliases": [
+        "DSO"
+      ],
+      "metadata": null
     },
     {
-      "id": "Semantic Relationships",
-      "name": "Semantic Relationships",
-      "type": "Concept",
-      "description": ""
+      "id": "droid_slam",
+      "name": "DROID-SLAM",
+      "type": "Method",
+      "description": "A learning-based direct visual odometry and SLAM method benchmarked against in monocular settings.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "System Design Thinking",
-      "name": "System Design Thinking",
-      "type": "Concept",
-      "description": ""
+      "id": "depthcov",
+      "name": "DepthCov",
+      "type": "Method",
+      "description": "A direct visual odometry/Slam baseline method using depth covariance.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Agentic Reasoning",
-      "name": "Agentic Reasoning",
-      "type": "Concept",
-      "description": ""
+      "id": "point_slam",
+      "name": "Point-SLAM",
+      "type": "Method",
+      "description": "A dense neural point cloud-based SLAM system that uses depth-guided sampling, compared to the proposed approach.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Solid Engineering",
-      "name": "Solid Engineering",
-      "type": "Concept",
-      "description": ""
+      "id": "nice_slam",
+      "name": "NICE-SLAM",
+      "type": "Method",
+      "description": "A neural implicit SLAM method using neural fields and voxels, serves as a baseline in RGB-D experiments.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Scalability",
-      "name": "Scalability",
-      "type": "Concept",
-      "description": ""
+      "id": "imap",
+      "name": "iMAP",
+      "type": "Method",
+      "description": "Implicit Mapping and Positioning in Real-Time; a real-time neural implicit SLAM method.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Fault Tolerance",
-      "name": "Fault Tolerance",
-      "type": "Concept",
-      "description": ""
+      "id": "orb_slam2",
+      "name": "ORB-SLAM2",
+      "type": "Method",
+      "description": "A widely-used feature-based SLAM system for monocular, stereo, and RGB-D inputs, serves as a baseline.",
+      "aliases": [
+        "ORB-SLAM"
+      ],
+      "metadata": null
     },
     {
-      "id": "Consistency",
-      "name": "Consistency",
-      "type": "Concept",
-      "description": ""
+      "id": "co_slam",
+      "name": "Co-SLAM",
+      "type": "Method",
+      "description": "Joint coordinate and sparse parametric encodings for neural real-time SLAM; used as a baseline in benchmarking and convergence analysis.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Performance",
-      "name": "Performance",
-      "type": "Concept",
-      "description": ""
+      "id": "bad_slam",
+      "name": "BAD-SLAM",
+      "type": "Method",
+      "description": "Bundle Adjusted Direct RGB-D SLAM; a dense RGB-D SLAM method used as a comparison baseline.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Gaussian Splatting",
-      "name": "Gaussian Splatting",
-      "type": "Concept",
-      "description": ""
+      "id": "vox_fusion",
+      "name": "Vox-Fusion",
+      "type": "Method",
+      "description": "A differentiable voxel fusion-based SLAM method, used as a baseline in RGB-D SLAM and rendering speed comparisons.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Computer Graphics",
-      "name": "Computer Graphics",
-      "type": "Concept",
-      "description": ""
+      "id": "di_fusion",
+      "name": "DI-Fusion",
+      "type": "Method",
+      "description": "An online implicit 3D reconstruction method with deep priors, used as a baseline in RGB-D SLAM.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "Radiance Field Rendering",
-      "name": "Radiance Field Rendering",
-      "type": "Concept",
-      "description": ""
+      "id": "eslam",
+      "name": "ESLAM",
+      "type": "Method",
+      "description": "Efficient dense SLAM system based on hybrid signed distance field (SDF) representations, used as a baseline.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "SQL Schema",
-      "name": "SQL Schema",
-      "type": "Concept",
-      "description": ""
+      "id": "elasticfusion",
+      "name": "ElasticFusion",
+      "type": "Method",
+      "description": "Surfel-based dense SLAM system, referenced for its adaptation to Gaussian-based approaches and loop closure.",
+      "aliases": null,
+      "metadata": null
     },
     {
-      "id": "System Architecture",
-      "name": "System Architecture",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Data Flow Diagrams",
-      "name": "Data Flow Diagrams",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Agent Logic",
-      "name": "Agent Logic",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Graph Database",
-      "name": "Graph Database",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Paper (node type)",
-      "name": "Paper (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Concept (node type)",
-      "name": "Concept (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Author (node type)",
-      "name": "Author (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Method (node type)",
-      "name": "Method (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Dataset (node type)",
-      "name": "Dataset (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Metric (node type)",
-      "name": "Metric (node type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Introduces (edge type)",
-      "name": "Introduces (edge type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Improves_on (edge type)",
-      "name": "Improves_on (edge type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Evaluates (edge type)",
-      "name": "Evaluates (edge type)",
-      "type": "Concept",
-      "description": ""
-    },
-    {
-      "id": "Extends (edge type)",
-      "name": "Extends (edge type)",
-      "type": "Concept",
-      "description": ""
+      "id": "kintinous",
+      "name": "Kintinous",
+      "type": "Method",
+      "description": "A real-time large scale dense RGB-D SLAM with volumetric fusion, included as a classical baseline.",
+      "aliases": null,
+      "metadata": null
     }
   ],
   "relationships": [
     {
-      "sourceId": "Take Home Assignment",
-      "targetId": "Agentic System",
-      "type": "proposes"
+      "sourceId": "3dgs",
+      "targetId": "monocular_slam",
+      "type": "addresses",
+      "description": "Applies 3D Gaussian Splatting as the main method for monocular SLAM.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Postgres",
-      "type": "uses"
+      "sourceId": "3dgs",
+      "targetId": "rgbd_slam",
+      "type": "addresses",
+      "description": "System is extendable to RGB-D SLAM, addressing both monocular and RGB-D settings.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Supabase",
-      "type": "uses"
+      "sourceId": "3dgs",
+      "targetId": "direct_camera_tracking",
+      "type": "uses",
+      "description": "Camera tracking is performed via direct optimisation against 3D Gaussians using rasterised images.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Agentic Reasoning",
-      "type": "uses"
+      "sourceId": "3dgs",
+      "targetId": "differentiable_rasterisation",
+      "type": "uses",
+      "description": "Uses differentiable rasterisation for efficient, gradient-supported map optimisation and camera tracking.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "System Design Thinking",
-      "type": "uses"
+      "sourceId": "3dgs",
+      "targetId": "analytic_jacobian_lie_group",
+      "type": "uses",
+      "description": "Derives and uses analytic Jacobian on Lie group for camera pose estimation with 3D Gaussians.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Knowledge Graph Construction",
-      "type": "achieves"
+      "sourceId": "3dgs",
+      "targetId": "isotropic_regularisation",
+      "type": "uses",
+      "description": "Introduces a novel isotropic regularisation of Gaussian shape for geometric consistency during mapping.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Reading Research Papers",
-      "type": "achieves"
+      "sourceId": "3dgs",
+      "targetId": "geometric_verification",
+      "type": "uses",
+      "description": "Employs geometric verification to improve reconstruction stability and resolve ambiguities.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Extracting Key Concepts and Entities",
-      "type": "achieves"
+      "sourceId": "3dgs",
+      "targetId": "gaussian_pruning",
+      "type": "uses",
+      "description": "Implements efficient Gaussian pruning to keep geometry clean and improve tracking accuracy.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Connecting Concepts Across Papers",
-      "type": "achieves"
+      "sourceId": "3dgs",
+      "targetId": "keyframe_selection_gaussian_covisibility",
+      "type": "uses",
+      "description": "Employs keyframe selection based on Gaussian covisibility and overlap for robust mapping and tracking.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Semantic Search",
-      "type": "achieves"
+      "sourceId": "3dgs",
+      "targetId": "photometric_loss",
+      "type": "uses",
+      "description": "Uses pixel-wise photometric loss for tracking and map optimisation.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Literature Mapping",
-      "type": "achieves"
+      "sourceId": "3dgs",
+      "targetId": "geometric_loss",
+      "type": "uses",
+      "description": "Optionally uses geometric loss (depth residual) when depth observations are available.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Novelty Discovery",
-      "type": "achieves"
+      "sourceId": "3dgs",
+      "targetId": "novel_view_synthesis",
+      "type": "addresses",
+      "description": "Addresses high-quality novel view synthesis via differentiable rasterisation.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Semantic Queries",
-      "type": "achieves"
+      "sourceId": "3dgs",
+      "targetId": "ate_rmse",
+      "type": "achieves",
+      "description": "Achieves state-of-the-art Absolute Trajectory Error (ATE) RMSE in camera tracking benchmarks.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "Agentic System",
-      "targetId": "Trend Analysis",
-      "type": "achieves"
+      "sourceId": "3dgs",
+      "targetId": "psnr",
+      "type": "achieves",
+      "description": "Achieves top Peak Signal-to-Noise Ratio (PSNR) for rendering in the Replica and TUM datasets.",
+      "confidence": 1,
+      "metadata": null
     },
     {
-      "sourceId": "3D Gaussian Splatting",
-      "targetId": "Real-Time Radiance Field Rendering",
-      "type": "achieves"
+      "sourceId": "3dgs",
+      "targetId": "ssim",
+      "type": "achieves",
+      "description": "Achieves top SSIM scores for image quality in rendered views.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "lpips",
+      "type": "achieves",
+      "description": "Achieves low LPIPS (Learned Perceptual Image Patch Similarity) for perceptual rendering quality.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "replica_dataset",
+      "type": "evaluated_on",
+      "description": "Evaluated on the Replica Dataset for both tracking and novel view synthesis benchmarks.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "tum_rgbd_dataset",
+      "type": "evaluated_on",
+      "description": "Evaluated on the TUM RGB-D dataset for monocular and RGB-D SLAM performance.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "adam_optimizer",
+      "type": "uses",
+      "description": "Uses Adam Optimizer for parameter optimisation (camera pose and Gaussian parameters).",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "spherical_harmonics",
+      "type": "uses",
+      "description": "Supports Spherical Harmonics for view-dependent radiance, used in ablation studies.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "slam",
+      "type": "addresses",
+      "description": "Presents a unified dense SLAM system using only 3D Gaussians, covering all of tracking, mapping, and rendering.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "dso",
+      "type": "improves_on",
+      "description": "Outperforms DSO in monocular VO/SLAM tracking accuracy benchmarks.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "depthcov",
+      "type": "improves_on",
+      "description": "Outperforms DepthCov in monocular SLAM tracking accuracy.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "droid_slam",
+      "type": "improves_on",
+      "description": "Outperforms DROID-SLAM (and DROID-VO) in monocular settings (no explicit loop closure) on key benchmarks.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "point_slam",
+      "type": "improves_on",
+      "description": "Achieves stronger rendering quality and map fidelity compared to Point-SLAM, especially for novel view synthesis.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "nice_slam",
+      "type": "improves_on",
+      "description": "Performs better than NICE-SLAM in RGB-D SLAM rendering and tracking benchmarks.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "imap",
+      "type": "improves_on",
+      "description": "Outperforms iMAP in both tracking and rendering quality, as well as memory efficiency.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "orb_slam2",
+      "type": "improves_on",
+      "description": "Surpasses ORB-SLAM2 particularly on fr1 sequences and approaches or matches its ATE RMSE in RGB-D cases.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "co_slam",
+      "type": "improves_on",
+      "description": "Shows advantages over Co-SLAM in convergence basin and sometimes in rendering quality and memory usage.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "bad_slam",
+      "type": "improves_on",
+      "description": "Achieves comparable or better camera tracking accuracy on several benchmarks.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "vox_fusion",
+      "type": "improves_on",
+      "description": "Provides faster rendering and higher or comparable tracking and rendering metrics than Vox-Fusion.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "di_fusion",
+      "type": "improves_on",
+      "description": "Provides comparable or superior results in RGB-D mapping and rendering versus DI-Fusion.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "eslam",
+      "type": "improves_on",
+      "description": "Improves upon ESLAM in tracking error (ATE RMSE) benchmarks.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "elasticfusion",
+      "type": "related_to",
+      "description": "The 3DGS system is conceptually related to surfel-based mapping in ElasticFusion, but achieves higher geometric fidelity and uses differentiable rasterisation.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "3dgs",
+      "targetId": "kintinous",
+      "type": "improves_on",
+      "description": "Obtains better camera tracking accuracy compared to Kintinous in RGB-D experiments.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "direct_camera_tracking",
+      "targetId": "differentiable_rasterisation",
+      "type": "uses",
+      "description": "Direct camera tracking leverages differentiable rasterisation for efficient gradient computation.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "differentiable_rasterisation",
+      "targetId": "analytic_jacobian_lie_group",
+      "type": "uses",
+      "description": "Differentiable rasterisation in this system leverages explicit camera Jacobians on SE(3) Lie group for optimisation.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "analytic_jacobian_lie_group",
+      "targetId": "3dgs",
+      "type": "based_on",
+      "description": "Analytic Jacobian on Lie group is developed specifically for 3D Gaussian Splatting camera pose estimation.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "keyframe_selection_gaussian_covisibility",
+      "targetId": "gaussian_pruning",
+      "type": "uses",
+      "description": "Occlusion-aware keyframe selection is linked to efficient pruning of unstable Gaussians.",
+      "confidence": 1,
+      "metadata": null
+    },
+    {
+      "sourceId": "spherical_harmonics",
+      "targetId": "3dgs",
+      "type": "uses",
+      "description": "Spherical Harmonics can be used for representing view-dependent radiance in 3DGS, as in ablation studies.",
+      "confidence": 1,
+      "metadata": null
     }
   ]
 }

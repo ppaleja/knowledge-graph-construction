@@ -1,0 +1,220 @@
+[
+  {
+    "newEntityId": "3dgs",
+    "action": "MERGE",
+    "targetId": "3d_gaussian_splatting",
+    "confidence": 0.98,
+    "rationale": "The new entity '3D Gaussian Splatting' (ID: 3dgs) is a common abbreviation and refers to the specific method described by candidate '3d_gaussian_splatting'. Both are of type 'Method' and their descriptions align perfectly, with the new entity providing a concise explanation of the core technique introduced by the seminal method."
+  },
+  {
+    "newEntityId": "slam",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Simultaneous Localization and Mapping (SLAM)' defines the general task. Existing candidates 'Monocular SLAM' and 'RGB-D SLAM' are specific variants of the SLAM task, not the general concept itself. '3D Gaussian Splatting' and 'ESLAM' are methods, not tasks, and are semantically distinct. Therefore, the new entity represents a distinct, more general concept."
+  },
+  {
+    "newEntityId": "monocular_slam",
+    "action": "CREATE",
+    "confidence": 0.95,
+    "rationale": "The new entity 'Monocular SLAM' is a specific type of the general 'SLAM' task, defined by its input modality. It is not semantically identical to the broader 'SLAM' concept (candidate 1). The other candidates (2, 3, 4) are 'Method' types, which are incompatible with the new entity's 'Task' type."
+  },
+  {
+    "newEntityId": "rgbd_slam",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'RGB-D SLAM' is defined as a 'Task'. All existing candidate entities are either 'Dataset' or 'Method' types. While some candidates are related to RGB-D SLAM (e.g., methods that perform it, or datasets used for it), none of them represent the 'Task' itself. Therefore, it should be created as a new entity."
+  },
+  {
+    "newEntityId": "direct_camera_tracking",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Direct Camera Tracking' describes a specific paradigm of camera pose estimation (direct optimization of residuals with explicit analytic Jacobian, without deep priors). None of the existing candidates represent this exact concept. Candidate 1 ('Analytic Jacobian on Lie Group') is a specific technique for computing a component (Jacobian) that might be used within 'Direct Camera Tracking', but it's not the same overall method. Candidate 2 ('4D Object Tracking') is a different type (Task). Candidate 3 ('Adam Optimizer') is a general optimization algorithm, not the specific tracking method. Candidate 4 ('Co-SLAM') is a specific named SLAM system, not the descriptive category of 'Direct Camera Tracking'."
+  },
+  {
+    "newEntityId": "differentiable_rasterisation",
+    "action": "MERGE",
+    "targetId": "differentiable_splatting",
+    "confidence": 0.9,
+    "rationale": "The new entity 'Differentiable Rasterisation' describes a rendering technique essential for gradient propagation and optimization in 3DGS. 'Differentiable Splatting' (Candidate 1) is precisely the technique used in 3DGS to achieve this, by projecting Gaussian primitives differentiably. While 'rasterisation' is a broader term than 'splatting', in the context of 3DGS, the differentiable rasterisation process *is* the differentiable splatting of Gaussians. The semantic meaning and function described for both entities are virtually identical within the specified domain. The type difference (Concept vs. Method) is minor given the strong functional overlap."
+  },
+  {
+    "newEntityId": "analytic_jacobian_lie_group",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity describes a specific method for computing an analytic Jacobian using Lie Group theory for camera pose estimation. While some existing candidates (like 'Direct Camera Tracking' or 'SfM') involve camera pose estimation and may use analytic Jacobians, none of them represent this specific, granular technique of 'Analytic Jacobian on Lie Group'. The new entity is a distinct, specialized method within the broader field of camera pose optimization."
+  },
+  {
+    "newEntityId": "isotropic_regularisation",
+    "action": "CREATE",
+    "confidence": 0.95,
+    "rationale": "The new entity 'Isotropic Regularisation' is a specific type of regularization term focused on making 3D Gaussians spherical. None of the existing candidates describe this specific concept. 'Depth Distortion Regularization' and 'Depth Distortion Loss' relate to depth distribution of 2D splats, 'Normal Consistency Loss' relates to normal-depth consistency, and '3D Gaussian Splatting' is a broader method, not a regularization concept."
+  },
+  {
+    "newEntityId": "geometric_verification",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Geometric Verification' is a 'Method' focused on verifying and regularizing geometry. None of the existing candidates are a semantic match. Candidate 1 ('Geometry Reconstruction') is a 'Task', not a 'Method'. Candidate 2 ('Adaptive Density Control') is a 'Concept' and semantically distinct. Candidates 3 ('Screened Poisson Surface Reconstruction') and 4 ('Geo-Neus') are both 'Methods' but describe different, specific methods for surface reconstruction or implicit surface learning, not the process of 'geometric verification' as described."
+  },
+  {
+    "newEntityId": "gaussian_pruning",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Efficient Gaussian Pruning' describes a specific method for removing Gaussians based on stability. None of the existing candidates match this semantic meaning. 'Adaptive Density Control' is an opposite operation (increasing Gaussians). 'Keyframe Selection' and '3D Gaussian Splatting' are distinct methods or overarching representations. 'Geometric Verification' is a broader concept, not specifically Gaussian pruning."
+  },
+  {
+    "newEntityId": "keyframe_selection_gaussian_covisibility",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity describes a specific method for keyframe selection in SLAM based on Gaussian covisibility. While it relates to '3D Gaussian Splatting' (Candidate 2) by using 3D Gaussians, it is a distinct algorithmic contribution focused on the *selection process* rather than the *scene representation* itself. None of the other candidates match in name or semantic meaning."
+  },
+  {
+    "newEntityId": "photometric_loss",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Photometric Loss' is a distinct loss function based on pixel differences. It is not semantically equivalent to 'Geometric Loss' (a different type of loss), 'D-SSIM' (a component of photometric loss), 'ATE RMSE' (an evaluation metric, not an optimization loss), or 'Differentiable Rasterisation' (a rendering technique, not a metric)."
+  },
+  {
+    "newEntityId": "geometric_loss",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Geometric Loss' is a distinct loss function based on depth/range differences. It is explicitly mentioned as being used 'jointly with photometric loss', indicating it is not the same as 'photometric_loss'. 'D-SSIM' is a component of photometric loss. 'Depth Distortion Loss' and 'Normal Consistency Loss' are specific regularization terms that contribute to geometric accuracy, but they are not the general 'Geometric Loss' described, and they also have a type mismatch (Concept vs Metric). Therefore, 'Geometric Loss' represents a new, distinct concept in the knowledge graph."
+  },
+  {
+    "newEntityId": "novel_view_synthesis",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Novel View Synthesis' (Type: Task) is distinct from all existing candidates. Candidates 2, 3, and 4 are of different types (Method, Dataset) and thus cannot be merged. Candidate 1, 'Geometry Reconstruction' (Type: Task), is a related but semantically distinct task from 'Novel View Synthesis'. 'Novel View Synthesis' focuses on image generation from new viewpoints, while 'Geometry Reconstruction' focuses on building 3D models."
+  },
+  {
+    "newEntityId": "ate_rmse",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Absolute Trajectory Error (ATE) RMSE' is a specific evaluation metric for SLAM. While 'photometric_loss' is also a 'Metric', it refers to a different concept (a loss function for optimization, not an evaluation metric for trajectory accuracy). The other candidates are 'Task' or 'Method' types, which are incompatible. Therefore, 'Absolute Trajectory Error (ATE) RMSE' is a distinct concept not present in the existing candidates."
+  },
+  {
+    "newEntityId": "psnr",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Peak Signal-to-Noise Ratio (PSNR)' is a distinct photometric quality metric. While all candidates are also 'Metric' type, none of them are semantically identical or synonymous with PSNR. SSIM, FPS, LIPPS, and Photometric Loss are all different concepts or metrics."
+  },
+  {
+    "newEntityId": "ssim",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Structural Similarity Index Measure (SSIM)' is the base metric. Existing candidates are either derived metrics (DSSIM), specific differentiable implementations (D-SSIM), or extensions (MS-SSIM) of SSIM, or entirely different metrics (LPIPS). None of the candidates represent the fundamental SSIM itself, thus a new entity should be created."
+  },
+  {
+    "newEntityId": "lpips",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Learned Perceptual Image Patch Similarity (LPIPS)' is a distinct metric. While candidate 'lipps' has a very similar name ('Local Image Patch Perceptual Similarity') and ID, the 'Learned' vs 'Local' distinction is crucial, referring to two different metrics in the field. All other candidates are clearly distinct by name, type, or semantic meaning."
+  },
+  {
+    "newEntityId": "replica_dataset",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Replica Dataset' is a distinct synthetic dataset for SLAM and novel view synthesis. None of the existing candidates (TUM RGB-D, DTU, Mip-NeRF360) match its name or specific identity, although some share common evaluation tasks like novel view synthesis. Each candidate refers to a different, well-established dataset."
+  },
+  {
+    "newEntityId": "tum_rgbd_dataset",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'TUM RGB-D Dataset' is a specific dataset. None of the existing candidates refer to this particular dataset. Candidates 1 and 4 are of different types (Task, Method). Candidates 2 and 3 are also datasets, but they refer to the 'DTU Dataset', which is a distinct dataset from the 'TUM RGB-D Dataset'."
+  },
+  {
+    "newEntityId": "adam_optimizer",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Adam Optimizer' is a general-purpose optimization algorithm. While the existing candidates are all 'Methods' and might utilize an optimizer like Adam, they describe specific techniques or components within computer vision/SLAM (e.g., camera tracking, Jacobian computation, keyframe selection, 3D reconstruction). None of the candidates refer to the Adam Optimizer itself. Therefore, it should be created as a distinct entity."
+  },
+  {
+    "newEntityId": "spherical_harmonics",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Spherical Harmonics' is a mathematical function basis (Concept) used for modeling. None of the existing candidates match its name, type, or semantic meaning. Candidates 1 and 4 are 'Methods', while 2 and 3 are 'Concepts' but refer to different concepts (rendering technique and the field being modeled, respectively) rather than the specific mathematical basis itself."
+  },
+  {
+    "newEntityId": "dso",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Direct Sparse Odometry (DSO)' is a specific classical method. None of the existing candidates (DROID-SLAM, DepthCov, iMAP, Point-SLAM) are aliases, abbreviations, or synonyms for DSO. They are all distinct methods, even if some share the broader domain of direct visual odometry or SLAM."
+  },
+  {
+    "newEntityId": "droid_slam",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'DROID-SLAM' is a specific learning-based direct visual odometry and SLAM method. Its name and detailed description do not match any of the existing candidate methods (DSO, iMAP, DepthCov, Point-SLAM), which are distinct SLAM/Odometry approaches. All entities are of type 'Method', but they represent different specific implementations or concepts."
+  },
+  {
+    "newEntityId": "depthcov",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'DepthCov' is a distinct method using 'depth covariance' for visual odometry/SLAM. While all candidates are also 'Methods' in the SLAM domain, none share a name, abbreviation, or the specific technical approach described by 'DepthCov'. Each candidate represents a different, named method (DROID-SLAM, DSO, Point-SLAM, DI-Fusion) with its own unique characteristics."
+  },
+  {
+    "newEntityId": "point_slam",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Point-SLAM' is a 'Method' described as a 'dense neural point cloud-based SLAM system'. While all candidate entities are also 'Method' types and related to SLAM, their names and specific descriptions indicate they are distinct approaches or systems (e.g., 'iMAP' is implicit, 'DROID-SLAM' is direct visual odometry, 'DI-Fusion' is implicit 3D reconstruction, 'NICE-SLAM' uses neural fields and voxels). There is no strong name similarity or semantic overlap to suggest a merge with any existing candidate."
+  },
+  {
+    "newEntityId": "nice_slam",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'NICE-SLAM' has a distinct name and describes a specific neural implicit SLAM method. While some existing candidates are also SLAM methods or related reconstruction techniques, their names and specific descriptions indicate they are different, unique methods (e.g., BAD-SLAM, Point-SLAM, Co-SLAM, DI-Fusion). There is no semantic overlap or name similarity strong enough to warrant a merge."
+  },
+  {
+    "newEntityId": "imap",
+    "action": "CREATE",
+    "confidence": 0.95,
+    "rationale": "The new entity 'iMAP' (Implicit Mapping and Positioning in Real-Time) is a distinct neural implicit SLAM method. While all candidates are also 'Method' types and related to SLAM or 3D reconstruction, none share a name (exact, abbreviation, or synonym) or describe the exact same specific method as 'iMAP'. Each candidate represents a different, named approach within the broader field."
+  },
+  {
+    "newEntityId": "orb_slam2",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "ORB-SLAM2 is a specific feature-based SLAM method. None of the existing candidates match its name or refer to the same specific method. Candidates 1, 2, and 3 are distinct SLAM methods, and candidate 4 is a SLAM task, not a method, making it semantically and type-incompatible."
+  },
+  {
+    "newEntityId": "co_slam",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'Co-SLAM' is a distinct method. While all candidates are also 'Method' types and related to SLAM, their names and specific descriptions (e.g., 'Implicit Mapping', 'Point-SLAM', 'SDF representations', 'neural fields and voxels') indicate they are different specific SLAM approaches compared to 'Co-SLAM's 'Joint coordinate and sparse parametric encodings'."
+  },
+  {
+    "newEntityId": "bad_slam",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'BAD-SLAM' is a 'Method' type, which is compatible with all candidates. However, its name 'BAD-SLAM' is distinct from all candidate names ('NICE-SLAM', 'DI-Fusion', 'Kintinous', 'Vox-Fusion'). Furthermore, the specific descriptions indicate 'BAD-SLAM' refers to 'Bundle Adjusted Direct RGB-D SLAM', which is a distinct method from the others, even though they all fall under the broader category of RGB-D SLAM methods. No existing entity represents the same specific concept."
+  },
+  {
+    "newEntityId": "vox_fusion",
+    "action": "CREATE",
+    "confidence": 0.95,
+    "rationale": "The new entity 'Vox-Fusion' has a distinct name and specific description ('differentiable voxel fusion-based SLAM method') that does not semantically match any of the existing candidates. While all candidates are 'Method' type and operate in the RGB-D SLAM domain, their core techniques (e.g., 'implicit 3D reconstruction', 'volumetric fusion', 'Bundle Adjusted Direct', 'neural implicit SLAM') are sufficiently different from 'voxel fusion' to warrant a new entity. There is no name similarity (exact, abbreviation, or synonym) with any existing candidate."
+  },
+  {
+    "newEntityId": "di_fusion",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'DI-Fusion' is a distinct method. While all candidates are also 'Method' types related to SLAM, their names and specific descriptions (e.g., 'voxel fusion-based', 'volumetric fusion', 'Implicit Mapping and Positioning', 'Bundle Adjusted Direct') are different from 'DI-Fusion's' 'online implicit 3D reconstruction method with deep priors'. There is no name similarity, abbreviation, or synonym match with any existing candidate."
+  },
+  {
+    "newEntityId": "eslam",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "The new entity 'ESLAM' has a distinct name and specific technical description ('Efficient dense SLAM system based on hybrid signed distance field (SDF) representations') that does not match any of the existing candidate SLAM methods. While all candidates are 'Method' types related to SLAM, their names and underlying technical approaches (e.g., Co-SLAM's joint coordinate/parametric encodings, ElasticFusion's surfel-based, BAD-SLAM's bundle-adjusted direct, Point-SLAM's neural point cloud) are different from ESLAM's description."
+  },
+  {
+    "newEntityId": "elasticfusion",
+    "action": "CREATE",
+    "confidence": 1,
+    "rationale": "ElasticFusion is a distinct surfel-based dense SLAM system. While all candidates are 'Method' type, their names, specific underlying representations (SDF, voxel, implicit, Gaussian splatting as a representation), and semantic meanings are different from ElasticFusion. None of the existing candidates refer to the same real-world concept as ElasticFusion."
+  },
+  {
+    "newEntityId": "kintinous",
+    "action": "CREATE",
+    "confidence": 0.95,
+    "rationale": "The new entity 'Kintinous' has a distinct name and refers to a specific 'real-time large scale dense RGB-D SLAM with volumetric fusion' method. While some candidates share high-level characteristics (e.g., RGB-D SLAM, volumetric/voxel fusion), none are semantically identical or share name similarity. 'Kintinous' is described as a 'classical baseline', while 'Vox-Fusion' is 'differentiable', indicating distinct approaches despite similar core concepts. Therefore, it should be created as a new entity."
+  }
+]
