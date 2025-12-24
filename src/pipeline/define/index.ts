@@ -1,7 +1,6 @@
 import type { IDefiner, GraphData, Entity } from "../../types/domain.js";
 import { DEFINE_PROMPT } from "../../prompts/define.js";
 import { Settings } from "llamaindex";
-import { GraphDataSchema } from "../../types/zodSchemas.js";
 
 export class Definer implements IDefiner {
     name = "The Architect";
