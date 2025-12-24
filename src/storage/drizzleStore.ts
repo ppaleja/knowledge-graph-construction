@@ -30,6 +30,7 @@ export class DrizzleGraphStore implements IGraphStore {
                         name: entity.name,
                         type: entity.type,
                         description: entity.description,
+                        aliases: entity.aliases,
                         metadata: entity.metadata,
                         embedding: embedding
                     }).onConflictDoUpdate({
@@ -38,6 +39,7 @@ export class DrizzleGraphStore implements IGraphStore {
                             name: entity.name,
                             type: entity.type,
                             description: entity.description,
+                            aliases: entity.aliases,
                             metadata: entity.metadata,
                             embedding: embedding
                         }
@@ -64,6 +66,8 @@ export class DrizzleGraphStore implements IGraphStore {
                             targetId: r.targetId,
                             type: r.type,
                             description: r.description,
+                            confidence: r.confidence !== undefined ? String(r.confidence) : undefined,
+                            sourcePaperId: r.sourcePaperId,
                             metadata: r.metadata
                         })));
                     }
