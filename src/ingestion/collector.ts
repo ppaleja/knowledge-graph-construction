@@ -2,10 +2,6 @@ import "dotenv/config";
 import fs from "fs/promises";
 import path from "path";
 import axios from "axios";
-import * as arxivNs from "arxiv-api-ts";
-
-// @ts-ignore
-const arxivSearch = arxivNs.default || arxivNs;
 
 const OPEN_ALEX_API = "https://api.openalex.org";
 const DOWNLOAD_DIR = path.resolve("data/papers/corpus");
@@ -63,6 +59,56 @@ function mapOpenAlexWorkToMetadata(work: OpenAlexWork): PaperMetadata {
 }
 
 /**
+ * Helper: Search Arxiv API directly for a PDF
+ */
+async function searchArxiv(title: string): Promise<{ id: string, pdfUrl: string } | null> {
+    try {
+        // Construct query: ti:"Title String"
+        // We use exact phrase search for better precision
+        const query = `ti:"${title.replace(/"/g, '')}"`;
+
+        const response = await axios.get("http://export.arxiv.org/api/query", {
+            params: {
+                search_query: query,
+                start: 0,
+                max_results: 1
+            }
+        });
+
+        // Simple XML parsing with Regex (lightweight, no extra deps)
+        const data = response.data;
+        if (!data) return null;
+
+        // Look for the first entry
+        const entryMatch = data.match(/<entry>([\s\S]*?)<\/entry>/);
+        if (!entryMatch) return null;
+
+        const entryContent = entryMatch[1];
+
+        // Extract ID
+        const idMatch = entryContent.match(/<id>(.*?)<\/id>/);
+        if (!idMatch) return null;
+        const fullId = idMatch[1];
+        const cleanId = fullId.split("/").pop() || fullId;
+
+        // Extract PDF link
+        const pdfLinkMatch = entryContent.match(/<link\s+title="pdf"\s+href="(.*?)"/);
+        if (pdfLinkMatch) {
+            return { id: cleanId, pdfUrl: pdfLinkMatch[1] };
+        }
+
+        // Fallback: try to construct PDF URL from ID if explict link missing (rare but possible)
+        // Arxiv IDs are usually like 1234.5678 or math/1234567
+        // Older IDs might need mapping, but typical new ones work with /pdf/ID.pdf
+        return { id: cleanId, pdfUrl: `https://arxiv.org/pdf/${cleanId}.pdf` };
+
+    } catch (error) {
+        console.warn("Error searching Arxiv:", error instanceof Error ? error.message : String(error));
+        return null;
+    }
+}
+
+/**
  * Helper: Try to find a PDF on Arxiv if OpenAlex failed
  */
 async function tryResolveArxivPdf(paper: PaperMetadata): Promise<PaperMetadata | null> {
@@ -71,35 +117,14 @@ async function tryResolveArxivPdf(paper: PaperMetadata): Promise<PaperMetadata |
         // Arxiv search can be sensitive to punctuation, so we clean it slightly
         const cleanTitle = paper.title.replace(/[:\-]/g, " ").trim();
 
-        // Use the namespace import's default or the module itself (handling CommonJS interop quirks)
-        // @ts-ignore
-        const searchResponse = await arxivSearch({
-            searchQueryParams: [
-                {
-                    include: [{ name: cleanTitle, prefix: "ti" }] // Search by title
-                }
-            ],
-            start: 0,
-            maxResults: 1
-        });
+        const result = await searchArxiv(cleanTitle);
 
-        // The library returns an object with 'entries' array
-        const results = searchResponse.entries;
-
-        if (results && results.length > 0) {
-            const match = results[0];
-            // Simple validation: check if titles are roughly similar (ignoring case/spacing)
-            const matchTitleNorm = match.title.toLowerCase().replace(/[^a-z0-9]/g, "");
-            const queryTitleNorm = paper.title.toLowerCase().replace(/[^a-z0-9]/g, "");
-
-            // Allow for some length difference (e.g. valid titles often get truncated or have extra whitespace)
-            if (matchTitleNorm.includes(queryTitleNorm) || queryTitleNorm.includes(matchTitleNorm)) {
-                console.log(`✅ Found on Arxiv: ${match.id}`);
-                return {
-                    ...paper,
-                    openAccessPdf: { url: match.id.replace("abs", "pdf") } // Convert abstract URL to PDF URL
-                };
-            }
+        if (result) {
+            console.log(`✅ Found on Arxiv: ${result.id}`);
+            return {
+                ...paper,
+                openAccessPdf: { url: result.pdfUrl }
+            };
         }
     } catch (err) {
         console.warn(`   Failed Arxiv lookup for "${paper.title}":`, err instanceof Error ? err.message : String(err));
@@ -263,6 +288,8 @@ export async function downloadPaper(
     try {
         if (!paper.openAccessPdf?.url) return null; // Should be caught above but TS check
 
+        // If it's an Arxiv link, simple fetch.
+        // If it's OpenAlex BEST_OA, can sometimes be tricky but axios usually handles redirects.
         const pdfRes = await axios.get(paper.openAccessPdf.url, {
             responseType: "arraybuffer",
             headers: {
