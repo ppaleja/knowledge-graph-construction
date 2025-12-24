@@ -17,6 +17,7 @@ export interface Relationship {
 export interface GraphData {
   entities: Entity[];
   relationships: Relationship[];
+  referencedEntityIds?: string[]; // IDs of entities in DB referenced by relationships but not in entities array
 }
 
 export interface IPipelineStep<TInput, TOutput> {

@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, jsonb, timestamp, vector, index } from "drizzle-orm/pg-core";
 
 export const documents = pgTable("documents", {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -14,7 +14,10 @@ export const entities = pgTable("entities", {
     type: text("type").notNull(),
     description: text("description"),
     metadata: jsonb("metadata"),
-});
+    embedding: vector("embedding", { dimensions: 768 }),
+}, (table) => [
+    index("embeddingIndex").using("hnsw", table.embedding.op("vector_cosine_ops")),
+]);
 
 export const relationships = pgTable("relationships", {
     id: uuid("id").primaryKey().defaultRandom(),

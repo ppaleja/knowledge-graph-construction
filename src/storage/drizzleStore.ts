@@ -1,6 +1,8 @@
 import { db, client } from "./index.js";
 import { entities, relationships } from "./schema.js";
 import type { GraphData, Entity, Relationship } from "../types/domain.js";
+import { cosineDistance, desc, gt, sql, isNotNull } from 'drizzle-orm';
+import { generateEmbedding, createEntityText } from '../utils/embeddings.js';
 
 // Interface must match what Orchestrator expects. 
 // Previously: export interface IGraphStore { init(): Promise<void>; saveGraph(graph: GraphData): Promise<void>; close(): Promise<void>; }
@@ -28,32 +30,50 @@ export class DrizzleGraphStore implements IGraphStore {
             await db.transaction(async (tx) => {
                 // Upsert Entities
                 for (const entity of graph.entities) {
+                    const embedding = await generateEmbedding(createEntityText(entity));
+
                     await tx.insert(entities).values({
                         id: entity.id,
                         name: entity.name,
                         type: entity.type,
                         description: entity.description,
-                        metadata: entity.metadata
+                        metadata: entity.metadata,
+                        embedding: embedding
                     }).onConflictDoUpdate({
                         target: entities.id,
                         set: {
                             name: entity.name,
                             type: entity.type,
                             description: entity.description,
-                            metadata: entity.metadata
+                            metadata: entity.metadata,
+                            embedding: embedding
                         }
                     });
                 }
 
                 // Upsert Relationships
                 if (graph.relationships.length > 0) {
-                    await tx.insert(relationships).values(graph.relationships.map(r => ({
-                        sourceId: r.sourceId,
-                        targetId: r.targetId,
-                        type: r.type,
-                        description: r.description,
-                        metadata: r.metadata
-                    })));
+                    const validIds = new Set([
+                        ...graph.entities.map(e => e.id),
+                        ...(graph.referencedEntityIds || [])
+                    ]);
+                    const validRelationships = graph.relationships.filter(r => {
+                        const isValid = validIds.has(r.sourceId) && validIds.has(r.targetId);
+                        if (!isValid) {
+                            console.warn(`[DrizzleStore] Skipping orphan relationship: ${r.sourceId} -> ${r.targetId} (Entity missing)`);
+                        }
+                        return isValid;
+                    });
+
+                    if (validRelationships.length > 0) {
+                        await tx.insert(relationships).values(validRelationships.map(r => ({
+                            sourceId: r.sourceId,
+                            targetId: r.targetId,
+                            type: r.type,
+                            description: r.description,
+                            metadata: r.metadata
+                        })));
+                    }
                 }
             });
         }
@@ -64,83 +84,38 @@ export class DrizzleGraphStore implements IGraphStore {
      * Uses ILIKE for fuzzy name matching and exact type matching
      * Phase 1: Text-based retrieval (can upgrade to vector similarity later)
      */
-    async fetchSimilarEntities(entity: Entity): Promise<Entity[]> {
-        const { ilike, eq, or, sql } = await import("drizzle-orm");
-
-        // Search for entities with similar names OR same type
-        // ILIKE is case-insensitive pattern matching
-        const candidates = await db
-            .select()
-            .from(entities)
-            .where(
-                or(
-                    ilike(entities.name, `%${entity.name}%`),
-                    eq(entities.type, entity.type)
-                )
-            )
-            .limit(5);
-
-        // Filter out the exact same ID and map to Entity type
-        return candidates
-            .filter(c => c.id !== entity.id)
-            .map(c => ({
-                id: c.id,
-                name: c.name,
-                type: c.type,
-                ...(c.description !== null && { description: c.description }),
-                ...(c.metadata !== null && { metadata: c.metadata as Record<string, any> }),
-            }));
-    }
-
     /**
-     * Batch fetch similar entities for multiple input entities in a single query
-     * Optimized to reduce DB round-trips
+     * Fetch similar entities from the database for candidate matching
+     * Uses Vector Search (Cosine Distance) via pgvector
      */
-    async fetchSimilarEntitiesBatch(inputEntities: Entity[]): Promise<Map<string, Entity[]>> {
-        const { ilike, eq, or, inArray, sql } = await import("drizzle-orm");
+    async fetchSimilarEntities(entity: Entity): Promise<Entity[]> {
+        try {
+            const queryEmbedding = await generateEmbedding(createEntityText(entity));
 
-        if (inputEntities.length === 0) {
-            return new Map();
-        }
+            // 1 - cosineDistance gives similarity (1 = identical, 0 = orthogonal, -1 = opposite)
+            // But drizzle's cosineDistance returns distance (lower is better, 0 is identical)
+            // Typically we want distance < threshold. 
+            // Let's use cosineDistance directly and sort ASC.
+            const distance = cosineDistance(entities.embedding, queryEmbedding);
 
-        // Extract all unique names and types for the WHERE clause
-        // We use a broader search here and filter in memory for specific matches
-        const types = [...new Set(inputEntities.map(e => e.type))];
+            const candidates = await db
+                .select({
+                    id: entities.id,
+                    name: entities.name,
+                    type: entities.type,
+                    description: entities.description,
+                    metadata: entities.metadata,
+                    distance: distance
+                })
+                .from(entities)
+                .where(isNotNull(entities.embedding))
+                .orderBy(distance)
+                .limit(5);
 
-        // Limit the total number of candidates to prevent massive result sets
-        // 5 candidates per entity is a reasonable heuristic
-        const limit = inputEntities.length * 5;
-
-        // Constructing a massive ILIKE OR clause can be slow if there are too many entities
-        // For now, we'll fetch by type and do name filtering in memory if the list is huge,
-        // or use a more complex query if the list is manageable.
-        // Let's use a combined approach: matching types IS efficient.
-        // matching names via ILIKE ANY() is Postgres specific but fast.
-
-        const names = inputEntities.map(e => e.name);
-
-        const candidates = await db
-            .select()
-            .from(entities)
-            .where(inArray(entities.type, types))
-            .limit(limit);
-
-        // Group candidates by matching input entity
-        const result = new Map<string, Entity[]>();
-
-        for (const input of inputEntities) {
-            const matches = candidates.filter(c =>
-                // Don't match self
-                c.id !== input.id && (
-                    // Name fuzzy match (both directions)
-                    c.name.toLowerCase().includes(input.name.toLowerCase()) ||
-                    input.name.toLowerCase().includes(c.name.toLowerCase()) ||
-                    // Exact type match
-                    c.type === input.type
-                )
-            )
-                // Sort by name similarity? For now just take first 5
-                .slice(0, 5)
+            // Filter by distance threshold (e.g., < 0.2 for very similar)
+            // For now, let's be generous to capture candidates.
+            return candidates
+                .filter(c => c.id !== entity.id)
                 .map(c => ({
                     id: c.id,
                     name: c.name,
@@ -148,10 +123,37 @@ export class DrizzleGraphStore implements IGraphStore {
                     ...(c.description !== null && { description: c.description }),
                     ...(c.metadata !== null && { metadata: c.metadata as Record<string, any> }),
                 }));
+        } catch (error) {
+            console.error(`[DrizzleStore] Error fetching similar entities:`, error);
+            return [];
+        }
+    }
 
-            if (matches.length > 0) {
-                result.set(input.id, matches);
-            }
+    /**
+     * Batch fetch similar entities for multiple input entities in a single query
+     * Optimized to reduce DB round-trips
+     */
+    /**
+     * Batch fetch similar entities for multiple input entities
+     * Uses parallel vector searches
+     */
+    async fetchSimilarEntitiesBatch(inputEntities: Entity[]): Promise<Map<string, Entity[]>> {
+        if (inputEntities.length === 0) {
+            return new Map();
+        }
+
+        const result = new Map<string, Entity[]>();
+
+        // Concurrency limit
+        const BATCH_SIZE = 5;
+        for (let i = 0; i < inputEntities.length; i += BATCH_SIZE) {
+            const batch = inputEntities.slice(i, i + BATCH_SIZE);
+            await Promise.all(batch.map(async (entity) => {
+                const similar = await this.fetchSimilarEntities(entity);
+                if (similar.length > 0) {
+                    result.set(entity.id, similar);
+                }
+            }));
         }
 
         return result;
