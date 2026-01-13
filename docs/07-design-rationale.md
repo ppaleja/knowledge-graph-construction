@@ -1,6 +1,6 @@
 # Design Rationale
 
-How this system addresses the four key assignment considerations.
+Key design decisions and their trade-offs.
 
 ## 1. Representing Data in the Graph
 
@@ -70,7 +70,7 @@ Chose prompting for flexibility. Fine-tuning could improve accuracy but requires
 - **Literature mapping**: Visualize how methods/datasets evolve across papers
 
 ### Example Queries
-See `docs/assignment/goal-queries.md` and [05-sql-schema.md](./05-sql-schema.md):
+See [05-sql-schema.md](./05-sql-schema.md) for example queries:
 - "Which papers improve on 3DGS?" → Relationship traversal
 - "Find methods related to NeRF" → Semantic + keyword search
 
@@ -81,8 +81,8 @@ Graph structure enables insights like:
 
 Provenance (`sourcePaperId`) allows tracing claims back to source papers.
 
-### Beyond Scope: Agentic Construction
-Built a ReACT agent for autonomous graph building - demonstrates how users could interact via natural language rather than manual paper selection.
+### Agentic Construction
+A ReACT agent enables autonomous graph building, allowing users to interact via natural language rather than manual paper selection.
 
 ---
 
@@ -116,14 +116,14 @@ Event-driven workflows (`@llamaindex/workflow-core`) enable:
 
 ---
 
-## Beyond Assignment Scope
+## Advanced Features
 
-Demonstrating technical depth:
+Beyond core functionality:
 
-See [08-limitations-tradeoffs.md](./08-limitations-tradeoffs.md) for what's in vs out of scope.
+See [08-limitations-tradeoffs.md](./08-limitations-tradeoffs.md) for scope details.
 
 ### 1. Agentic Orchestration
-Assignment required a pipeline. Built a central controller with ReACT reasoning for autonomous operation.
+A central controller with ReACT reasoning enables autonomous operation and autonomous paper discovery.
 
 ### 2. Advanced Ingestion
 Multi-source fallback (OpenAlex → arXiv) and metadata extraction (LlamaExtract) show production-ready ingestion.

@@ -16,7 +16,7 @@ What's implemented, what's not, and why.
 ❌ No graph visualization  
 ❌ No user authentication
 
-**Why**: Assignment focused on backend. Future UI would use React + D3.js for graph visualization.
+**Why**: Current scope focuses on backend. Future UI could use React + D3.js for graph visualization.
 
 See [09-future-roadmap.md](./09-future-roadmap.md) for UI concepts.
 
@@ -103,7 +103,7 @@ See [02-agent-implementation.md](./02-agent-implementation.md) for agentic detai
 **Mitigation**: Debug artifacts enable manual inspection
 
 ### Corpus Coverage
-- Focused on Gaussian Splatting (assignment requirement)
+- Focused on Gaussian Splatting domain
 - Not tested on other domains
 
 **Mitigation**: Architecture is domain-agnostic, but prompts tuned for CS papers
@@ -124,4 +124,4 @@ See [02-agent-implementation.md](./02-agent-implementation.md) for agentic detai
 2. UI polish
 3. Multi-tenancy
 
-This aligns with assignment scope: "proof-of-concept backend that extracts nodes and relationships."
+This is a proof-of-concept backend designed to extract nodes and relationships from academic papers.

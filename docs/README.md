@@ -1,6 +1,6 @@
-# Assignment Deliverables
+# Knowledge Graph Construction System
 
-This directory contains the submission materials for the Alaris Security take-home assignment.
+A modular backend system for extracting and constructing knowledge graphs from academic papers.
 
 ## Navigation Guide
 
@@ -22,13 +22,13 @@ This directory contains the submission materials for the Alaris Security take-ho
 - **[08-limitations-tradeoffs.md](./08-limitations-tradeoffs.md)** - Scope and trade-offs
 - **[09-future-roadmap.md](./09-future-roadmap.md)** - Scaling and advanced features
 
-## Assignment Requirements Mapping
+## Documentation Structure
 
-| Deliverable | Files |
-|------------|-------|
-| Backend Codebase | 01-04 |
-| SQL Schema Definition | 05 |
-| Documentation | 06-09 |
+| Section | Files |
+|---------|-------|
+| Backend Architecture & Pipelines | 01-04 |
+| Database Schema | 05 |
+| System Design & Roadmap | 06-09 |
 
 ## Running the System
 
@@ -44,7 +44,7 @@ npm run build && npm run start path/to/paper.pdf --integrate
 
 ## Key Features
 
-- **Agentic orchestration** with ReACT reasoning (beyond assignment scope)
+- **Agentic orchestration** with ReACT reasoning
 - **Multi-source ingestion** with OpenAlex + arXiv fallback
 - **EDC pipeline** inspired by https://arxiv.org/pdf/2404.03868
 - **KARMA architecture** inspired by https://arxiv.org/pdf/2502.06472
