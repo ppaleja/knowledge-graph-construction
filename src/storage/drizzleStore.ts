@@ -11,8 +11,8 @@ export class DrizzleGraphStore implements IGraphStore {
     async init(): Promise<void> {
         // Drizzle usually handles migrations via CLI (drizzle-kit push or migrate)
         // We can't easily auto-migrate here without running the migration script.
-        // For this takehome, we assume the user runs `npx drizzle-kit push` 
-        // OR we can trigger it if we want to be fancy, but standard practice is CLI.
+        // Ensure the user runs `npx drizzle-kit push` before initializing
+        // OR it can be triggered programmatically, but standard practice is CLI.
         console.log("Initializing Drizzle Store... (Ensure you ran 'npx drizzle-kit push')");
     }
 

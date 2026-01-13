@@ -294,7 +294,7 @@ export async function downloadPaper(
         const pdfRes = await axios.get(paper.openAccessPdf.url, {
             responseType: "arraybuffer",
             headers: {
-                "User-Agent": `AlarisResearchAgent/1.0 (mailto:${OPEN_ALEX_EMAIL || "example@example.com"})`
+                "User-Agent": `ResearchPaperCollector/1.0 (mailto:${OPEN_ALEX_EMAIL || "example@example.com"})`
             }
         });
         await fs.writeFile(filePath, pdfRes.data);

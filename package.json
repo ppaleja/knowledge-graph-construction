@@ -1,7 +1,7 @@
 {
-  "name": "alaris-takehome",
+  "name": "kg-construction",
   "version": "1.0.0",
-  "description": "",
+  "description": "A modular backend system for extracting and constructing knowledge graphs from academic papers",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
